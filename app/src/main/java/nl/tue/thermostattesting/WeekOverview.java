@@ -11,6 +11,7 @@ package nl.tue.thermostattesting;
 /**
  * Created by Julian on 23-5-2016.
  * Edited by Koen on 31-5 at 17.56
+ * Edit2
  */
 public class WeekOverview extends AppCompatActivity {
 
