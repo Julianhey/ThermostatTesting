@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">ThermostatTesting</string>
+
+    <string-array
+        name="Week_Preset_Names">
+        <item
+            >Preset 1</item>
+        <item
+            >Preset 2</item>
+        <item
+            >Preset 3</item>
+        <item
+            >etc...</item>
+    </string-array>
+</resources>
