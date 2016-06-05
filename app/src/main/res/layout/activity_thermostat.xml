@@ -47,14 +47,6 @@ tools:context="nl.tue.thermostattesting.ThermostatActivity"
     android:textSize="30dp"
     android:id="@+id/bMinus" />
 
-<SeekBar
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/seekBar"
-    android:max="30"
-    android:thumbTint="#b1b0b0"
-    android:progressTint="#ff7b00"
-    android:indeterminate="false" />
 
 <Button
     android:layout_width="wrap_content"

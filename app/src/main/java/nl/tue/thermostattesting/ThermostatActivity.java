@@ -13,12 +13,34 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import org.thermostatapp.util.HeatingSystem;
+
+import java.math.BigDecimal;
+
 public class ThermostatActivity extends AppCompatActivity {
 
-    int vtemp = 21;
+    //double vtemp;
     TextView temp;
-    SeekBar seekBar;
+    BigDecimal vtemp;
+    BigDecimal pointone = new BigDecimal("0.1");
 
+
+    public void getcurrentTemp() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+        try {
+            //vtemp = Double.parseDouble(HeatingSystem.get("currentTemperature"));
+            vtemp = new BigDecimal(HeatingSystem.get("currentTemperature"));             //.valueOf(vtemp);
+            vtemp.setScale(10, BigDecimal.ROUND_CEILING);
+            System.out.println(vtemp);
+
+        } catch (Exception e) {
+            System.err.println("Error from getdata "+e);
+        }
+    }
+        }).start();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +50,15 @@ public class ThermostatActivity extends AppCompatActivity {
         Button bMinus = (Button) findViewById(R.id.bMinus);
         temp = (TextView) findViewById(R.id.temp);
         Button weekOverview = (Button) findViewById(R.id.week_overview);
+        temp.setText("- \u2103");
+        getcurrentTemp();
+        System.out.println(vtemp);
+        try {
+            Thread.sleep(1000);                 //1000 milliseconds is one second.
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+        temp.setText(vtemp+" \u2103");
 
         weekOverview.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -37,40 +68,22 @@ public class ThermostatActivity extends AppCompatActivity {
             }
         });
 
-        seekBar = (SeekBar) findViewById(R.id.seekBar);
-        seekBar.setProgress(vtemp);
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                temp.setText(progress+" \u2103");
-                vtemp =  progress;
-            }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
         bPlus.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                vtemp ++;
+                vtemp = vtemp.add(pointone);
                 temp.setText(vtemp+" \u2103");
-                seekBar.setProgress(vtemp);
+
             }
         });
         assert bMinus != null;
         bMinus.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                vtemp--;
+                vtemp = vtemp.subtract(pointone);
                 temp.setText(vtemp+" \u2103");
-                seekBar.setProgress(vtemp);
+
             }
         });
 

@@ -20,7 +20,7 @@ tools:context="nl.tue.thermostattesting.WeekOverview">
         android:thumbTint="#ff7b00"
         android:checked="false"
         android:layout_alignTop="@+id/textView3"
-        android:layout_alignEnd="@+id/WednesdayButton" />
+        android:layout_alignParentEnd="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -32,52 +32,14 @@ tools:context="nl.tue.thermostattesting.WeekOverview">
         android:layout_marginTop="36dp"
         android:layout_alignParentStart="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tuesday"
-        android:id="@+id/TuesdayButton"
-        android:layout_below="@+id/Mondaybutton"
-        android:layout_alignParentStart="true"
-        android:layout_alignEnd="@+id/Mondaybutton" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Wednesday"
-        android:id="@+id/WednesdayButton"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/TuesdayButton"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentEnd="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Thursday"
-        android:id="@+id/ThursdayButton"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/WednesdayButton"
-        android:layout_alignParentLeft="true"
-        android:layout_alignEnd="@+id/WednesdayButton" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Friday"
-        android:id="@+id/FridayButton"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/ThursdayButton"
-        android:layout_alignParentLeft="true"
-        android:layout_alignEnd="@+id/ThursdayButton" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Huehuehue"
         android:id="@+id/textView3"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -88,7 +50,7 @@ tools:context="nl.tue.thermostattesting.WeekOverview">
         android:layout_below="@+id/textView3"
         android:layout_alignParentStart="false"
         android:layout_alignParentEnd="false" />
-<LinearLayout
+    <LinearLayout
     android:id="@+id/linearLayout1"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -104,25 +66,7 @@ tools:context="nl.tue.thermostattesting.WeekOverview">
         android:id="@+id/presetSpinner"
         android:layout_alignTop="@+id/linearLayout1"
         android:layout_alignParentStart="true" />
-</LinearLayout>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Saturday"
-        android:id="@+id/SaturdayButton"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/FridayButton"
-        android:layout_alignParentEnd="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sunday"
-        android:id="@+id/SundayButton"
-        android:layout_below="@+id/SaturdayButton"
-        android:layout_alignParentStart="true"
-        android:layout_alignEnd="@+id/SaturdayButton" />
+    </LinearLayout>
 
     <Button
         android:layout_width="wrap_content"
@@ -132,6 +76,56 @@ tools:context="nl.tue.thermostattesting.WeekOverview">
         android:layout_above="@+id/Mondaybutton"
         android:layout_alignTop="@+id/linearLayout1"
         android:layout_alignParentEnd="true" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/Mondaybutton"
+        android:layout_centerHorizontal="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Day: -"
+            android:id="@+id/dayView" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Time: -"
+            android:id="@+id/timeView" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Current Temperature: - &#x2103;"
+            android:id="@+id/currTempView" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Day Temperature: - &#x2103;"
+            android:id="@+id/dayTempView" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Night Temperature: - &#x2103;"
+            android:id="@+id/nightTempView" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Vacation mode: -"
+            android:id="@+id/vacView" />
+    </LinearLayout>
 
 
 </RelativeLayout>
