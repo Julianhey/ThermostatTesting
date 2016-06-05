@@ -25,7 +25,7 @@ tools:context="nl.tue.thermostattesting.WeekOverview">
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Monday"
+        android:text="Display Info"
         android:id="@+id/Mondaybutton"
         android:layout_below="@+id/linearLayout1"
         android:layout_alignParentEnd="true"

@@ -4,12 +4,18 @@
     <string-array
         name="Week_Preset_Names">
         <item
-            >Preset 1</item>
+            >Monday</item>
         <item
-            >Preset 2</item>
+            >Tuesday</item>
         <item
-            >Preset 3</item>
+            >Wednesday</item>
         <item
-            >etc...</item>
+            >Thursday</item>
+        <item
+            >Friday</item>
+        <item
+            >Saturday</item>
+        <item
+            >Sunday</item>
     </string-array>
 </resources>
