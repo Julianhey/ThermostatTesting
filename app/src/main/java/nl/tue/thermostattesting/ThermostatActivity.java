@@ -23,31 +23,28 @@ public class ThermostatActivity extends AppCompatActivity {
     TextView temp;
     BigDecimal vtemp;
     BigDecimal pointone = new BigDecimal("0.1");
+    String dayViewS, timeViewS, currTempViewS,dayTempViewS, nightTempViewS, vacViewS;
+    TextView dayView, timeView, currTempView, dayTempView, nightTempView, vacView;
 
 
-    public void getcurrentTemp() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-        try {
-            //vtemp = Double.parseDouble(HeatingSystem.get("currentTemperature"));
-            vtemp = new BigDecimal(HeatingSystem.get("currentTemperature"));             //.valueOf(vtemp);
-            vtemp.setScale(10, BigDecimal.ROUND_CEILING);
-            System.out.println(vtemp);
 
-        } catch (Exception e) {
-            System.err.println("Error from getdata "+e);
-        }
-    }
-        }).start();
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_thermostat);
+
+        dayView = (TextView) findViewById(R.id.dayView);
+        timeView = (TextView) findViewById(R.id.timeView);
+        currTempView = (TextView) findViewById(R.id.currTempView);
+        dayTempView = (TextView) findViewById(R.id.dayTempView);
+        nightTempView = (TextView) findViewById(R.id.nightTempView);
+        vacView = (TextView) findViewById(R.id.vacView);
+
         Button bPlus = (Button) findViewById(R.id.bPlus);
         Button bMinus = (Button) findViewById(R.id.bMinus);
+        Button infoButton = (Button) findViewById(R.id.infoButton);
+
         temp = (TextView) findViewById(R.id.temp);
         Button weekOverview = (Button) findViewById(R.id.week_overview);
         temp.setText("- \u2103");
@@ -86,7 +83,68 @@ public class ThermostatActivity extends AppCompatActivity {
 
             }
         });
+        infoButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                getAndSetInfo();
+            }
+        });
 
 
+
+
+
+    }
+
+    public void getAndSetInfo() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    dayViewS = HeatingSystem.get("day");
+                    timeViewS = HeatingSystem.get("time");
+                    currTempViewS = HeatingSystem.get("currentTemperature");
+                    dayTempViewS = HeatingSystem.get("dayTemperature");
+                    nightTempViewS = HeatingSystem.get("nightTemperature");
+                    vacViewS = HeatingSystem.get("weekProgramState");
+
+
+                    //wpg = HeatingSystem.getWeekProgram();
+
+                } catch (Exception e) {
+                    System.err.println("Error from getdata "+e);
+                }
+            }
+        }).start();
+
+        try {
+            Thread.sleep(300);                 //1000 milliseconds is one second.
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+
+        dayView.setText("Day: " + dayTempViewS);
+        timeView.setText("Time: " + timeViewS);
+        currTempView.setText("Current Temperature: " + currTempViewS + "\u2103;");
+        dayTempView.setText("Day Temperature: " + dayTempViewS + "\u2103;");
+        nightTempView.setText("Night Temperature: " + nightTempViewS + "\u2103;");
+        vacView.setText("Vacation mode: " + vacViewS);
+    }
+    public void getcurrentTemp() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    //vtemp = Double.parseDouble(HeatingSystem.get("currentTemperature"));
+                    vtemp = new BigDecimal(HeatingSystem.get("currentTemperature"));             //.valueOf(vtemp);
+                    vtemp.setScale(10, BigDecimal.ROUND_CEILING);
+                    System.out.println(vtemp);
+
+                } catch (Exception e) {
+                    System.err.println("Error from getdata "+e);
+                }
+            }
+        }).start();
     }
 }

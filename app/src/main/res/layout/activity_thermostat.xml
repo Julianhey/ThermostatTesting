@@ -35,7 +35,7 @@ tools:context="nl.tue.thermostattesting.ThermostatActivity"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:textAppearance="?android:attr/textAppearanceLarge"
-    android:text="21 &#x2103;"
+    android:text="- &#x2103;"
     android:textSize="30dp"
 
     android:id="@+id/temp" />
@@ -58,7 +58,49 @@ tools:context="nl.tue.thermostattesting.ThermostatActivity"
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="AnothaOne"
-        android:id="@+id/button"
+        android:text="Display current info"
+        android:id="@+id/infoButton"
         android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Day: -"
+        android:id="@+id/dayView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Time: -"
+        android:id="@+id/timeView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Current Temperature: - &#x2103;"
+        android:id="@+id/currTempView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Day Temperature: - &#x2103;"
+        android:id="@+id/dayTempView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Night Temperature: - &#x2103;"
+        android:id="@+id/nightTempView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Vacation mode: -"
+        android:id="@+id/vacView" />
 </LinearLayout>

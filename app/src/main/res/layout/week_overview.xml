@@ -25,8 +25,8 @@ tools:context="nl.tue.thermostattesting.WeekOverview">
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Display Info"
-        android:id="@+id/Mondaybutton"
+        android:text="Display Program Info"
+        android:id="@+id/Programbutton"
         android:layout_below="@+id/linearLayout1"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="36dp"
@@ -73,7 +73,7 @@ tools:context="nl.tue.thermostattesting.WeekOverview">
         android:layout_height="54dp"
         android:text="Set Preset"
         android:id="@+id/SetPresetButton"
-        android:layout_above="@+id/Mondaybutton"
+        android:layout_above="@+id/Programbutton"
         android:layout_alignTop="@+id/linearLayout1"
         android:layout_alignParentEnd="true" />
 
@@ -81,50 +81,17 @@ tools:context="nl.tue.thermostattesting.WeekOverview">
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/Mondaybutton"
+        android:layout_below="@+id/Programbutton"
         android:layout_centerHorizontal="true">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Day: -"
+            android:text="Display week program and implement the switches here"
             android:id="@+id/dayView" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Time: -"
-            android:id="@+id/timeView" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Current Temperature: - &#x2103;"
-            android:id="@+id/currTempView" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Day Temperature: - &#x2103;"
-            android:id="@+id/dayTempView" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Night Temperature: - &#x2103;"
-            android:id="@+id/nightTempView" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Vacation mode: -"
-            android:id="@+id/vacView" />
     </LinearLayout>
 
 
