@@ -4,6 +4,7 @@ package nl.tue.thermostattesting;
         import android.os.Bundle;
         import android.support.v7.app.AppCompatActivity;
         import android.support.v7.widget.Toolbar;
+        import android.view.View;
         import android.view.Window;
         import android.widget.ArrayAdapter;
         import android.widget.Button;
@@ -21,7 +22,7 @@ package nl.tue.thermostattesting;
  */
 public class WeekOverview extends AppCompatActivity {
 
-    Button Programbutton, Mondaybutton, Tuesdaybutton, Wednesdaybutton, Thursdaybutton, Fridaybutton, Saturdaybutton, Sundaybutton;
+    Button Mondaybutton, Tuesdaybutton, Wednesdaybutton, Thursdaybutton, Fridaybutton, Saturdaybutton, Sundaybutton;
     WeekProgram wpg;
     String dayViewS, timeViewS, currTempViewS,dayTempViewS, nightTempViewS, vacViewS;
     TextView dayView, timeView, currTempView, dayTempView, nightTempView, vacView;
@@ -43,14 +44,10 @@ public class WeekOverview extends AppCompatActivity {
         nightTempView = (TextView) findViewById(R.id.nightTempView);
         vacView = (TextView) findViewById(R.id.vacView);
 
-
-        HeatingSystem.BASE_ADDRESS = "http://wwwis.win.tue.nl/2id40-ws/44";
-        HeatingSystem.WEEK_PROGRAM_ADDRESS = HeatingSystem.BASE_ADDRESS + "/weekProgram";
-
         //getanddisplaydata button
-        Programbutton = (Button)findViewById(R.id.Programbutton);
+        Mondaybutton = (Button)findViewById(R.id.Mondaybutton);
 
-        Programbutton.setOnClickListener(new View.OnClickListener(){
+        Mondaybutton.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
@@ -58,6 +55,7 @@ public class WeekOverview extends AppCompatActivity {
                 //getAndSetInfo();
             }
         });
+
     }
 
     public void getAndSetInfo() {

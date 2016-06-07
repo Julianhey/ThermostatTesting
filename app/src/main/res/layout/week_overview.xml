@@ -22,16 +22,6 @@ tools:context="nl.tue.thermostattesting.WeekOverview">
         android:layout_alignTop="@+id/textView3"
         android:layout_alignParentEnd="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Display Program Info"
-        android:id="@+id/Programbutton"
-        android:layout_below="@+id/linearLayout1"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="36dp"
-        android:layout_alignParentStart="true" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -50,48 +40,73 @@ tools:context="nl.tue.thermostattesting.WeekOverview">
         android:layout_below="@+id/textView3"
         android:layout_alignParentStart="false"
         android:layout_alignParentEnd="false" />
-    <LinearLayout
-    android:id="@+id/linearLayout1"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="#D3D3D3"
-
-    android:layout_marginTop="48dp"
-    android:layout_below="@+id/CurrPrestextView"
-    android:layout_alignParentStart="true">
-
-    <Spinner
-        android:layout_width="183dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/presetSpinner"
-        android:layout_alignTop="@+id/linearLayout1"
-        android:layout_alignParentStart="true" />
-    </LinearLayout>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="54dp"
         android:text="Set Preset"
         android:id="@+id/SetPresetButton"
-        android:layout_above="@+id/Programbutton"
-        android:layout_alignTop="@+id/linearLayout1"
-        android:layout_alignParentEnd="true" />
+        android:layout_below="@+id/Vacswitch"
+        android:layout_alignStart="@+id/Vacswitch" />
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/Programbutton"
-        android:layout_centerHorizontal="true">
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/SetPresetButton">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <Button
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Display week program and implement the switches here"
-            android:id="@+id/dayView" />
+            android:text="Monday"
+            android:id="@+id/Mondaybutton"
+            android:layout_alignParentEnd="true"
 
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/CurrPrestextView" />
 
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tuesday"
+            android:id="@+id/Tuesdaybutton"
+            android:layout_gravity="center_horizontal" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Wednesday"
+            android:id="@+id/Wednesdaybutton"
+            android:layout_gravity="center_horizontal" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Thursday"
+            android:id="@+id/Thursdaybutton"
+            android:layout_gravity="center_horizontal" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Friday"
+            android:id="@+id/Fridaybutton"
+            android:layout_gravity="center_horizontal" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Saturday"
+            android:id="@+id/Saturdaybutton"
+            android:layout_gravity="center_horizontal" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sunday"
+            android:id="@+id/Sundaybutton"
+            android:layout_gravity="center_horizontal" />
     </LinearLayout>
 
 
