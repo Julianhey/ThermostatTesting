@@ -75,7 +75,7 @@ tools:context="nl.tue.thermostattesting.WeekOverview">
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="MOARTESTING!"
+        android:text="Huehuehue"
         android:id="@+id/textView3"
         android:layout_alignParentTop="true" />
 
