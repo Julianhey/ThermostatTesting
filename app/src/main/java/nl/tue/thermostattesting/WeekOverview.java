@@ -26,6 +26,7 @@ public class WeekOverview extends AppCompatActivity {
     WeekProgram wpg;
     String dayViewS, timeViewS, currTempViewS,dayTempViewS, nightTempViewS, vacViewS;
     TextView dayView, timeView, currTempView, dayTempView, nightTempView, vacView;
+    int test;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +34,10 @@ public class WeekOverview extends AppCompatActivity {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.week_overview);
 
-        Spinner presetSpinner = (Spinner) findViewById(R.id.presetSpinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.Week_Preset_Names, android.R.layout.simple_spinner_dropdown_item);
-        presetSpinner.setAdapter(adapter);
+        //Code for a spinner if needed.
+        //Spinner presetSpinner = (Spinner) findViewById(R.id.presetSpinner);
+        //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.Week_Preset_Names, android.R.layout.simple_spinner_dropdown_item);
+        //presetSpinner.setAdapter(adapter);
 
         dayView = (TextView) findViewById(R.id.dayView);
         timeView = (TextView) findViewById(R.id.timeView);
@@ -52,7 +54,7 @@ public class WeekOverview extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                //getAndSetInfo();
+                getAndSetInfo();
             }
         });
 
@@ -65,15 +67,20 @@ public class WeekOverview extends AppCompatActivity {
             public void run() {
                 try {
 
-                    dayViewS = HeatingSystem.get("day");
-                    timeViewS = HeatingSystem.get("time");
-                    currTempViewS = HeatingSystem.get("currentTemperature");
-                    dayTempViewS = HeatingSystem.get("dayTemperature");
-                    nightTempViewS = HeatingSystem.get("nightTemperature");
-                    vacViewS = HeatingSystem.get("weekProgramState");
+                    //dayViewS = HeatingSystem.get("day");
+                    //timeViewS = HeatingSystem.get("time");
+                    //currTempViewS = HeatingSystem.get("currentTemperature");
+                    //dayTempViewS = HeatingSystem.get("dayTemperature");
+                    //nightTempViewS = HeatingSystem.get("nightTemperature");
+                    //vacViewS = HeatingSystem.get("weekProgramState");
 
 
-                    //wpg = HeatingSystem.getWeekProgram();
+                    wpg = HeatingSystem.getWeekProgram();
+
+
+                    //test = wpg.get_nr_switches_active(3);
+
+                    //System.out.println(test);
 
                 } catch (Exception e) {
                     System.err.println("Error from getdata "+e);
