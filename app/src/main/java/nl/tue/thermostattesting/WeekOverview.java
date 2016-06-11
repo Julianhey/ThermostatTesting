@@ -13,7 +13,10 @@ package nl.tue.thermostattesting;
         import android.widget.TextView;
 
         import org.thermostatapp.util.HeatingSystem;
+        import org.thermostatapp.util.Switch;
         import org.thermostatapp.util.WeekProgram;
+
+        import java.util.ArrayList;
 
 /**
  * Created by Julian on 23-5-2016.
@@ -24,9 +27,10 @@ public class WeekOverview extends AppCompatActivity {
 
     Button Mondaybutton, Tuesdaybutton, Wednesdaybutton, Thursdaybutton, Fridaybutton, Saturdaybutton, Sundaybutton;
     WeekProgram wpg;
-    String dayViewS, timeViewS, currTempViewS,dayTempViewS, nightTempViewS, vacViewS;
+    String Tuesday, dayViewS, timeViewS, currTempViewS,dayTempViewS, nightTempViewS, vacViewS;
+    ArrayList<Switch> TuesdaySwitches;
     TextView dayView, timeView, currTempView, dayTempView, nightTempView, vacView;
-    int test;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,11 +80,20 @@ public class WeekOverview extends AppCompatActivity {
 
 
                     wpg = HeatingSystem.getWeekProgram();
+                    //wpg.data.get(1).Add;
+
+                    HeatingSystem.setWeekProgram(wpg);
+                    //wpg.setDefault();
 
 
-                    //test = wpg.get_nr_switches_active(3);
+                    TuesdaySwitches = wpg.getSwitchArrayL(1);
+                    HeatingSystem.setWeekProgram(wpg);
 
-                    //System.out.println(test);
+                    for (int i = 0; i < 10; i++) {
+                        System.out.println(TuesdaySwitches.get(i).toXMLString());
+
+                    }
+
 
                 } catch (Exception e) {
                     System.err.println("Error from getdata "+e);
@@ -94,11 +107,7 @@ public class WeekOverview extends AppCompatActivity {
             Thread.currentThread().interrupt();
         }
 
-        dayView.setText("Day: " + dayTempViewS);
-        timeView.setText("Time: " + timeViewS);
-        currTempView.setText("Current Temperature: " + currTempViewS + "\u2103;");
-        dayTempView.setText("Day Temperature: " + dayTempViewS + "\u2103;");
-        nightTempView.setText("Night Temperature: " + nightTempViewS + "\u2103;");
-        vacView.setText("Vacation mode: " + vacViewS);
+       // dayView.setText("Day: " + dayTempViewS);
+
     }
 }

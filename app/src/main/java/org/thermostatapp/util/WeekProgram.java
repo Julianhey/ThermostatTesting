@@ -4,6 +4,7 @@
  */
 package org.thermostatapp.util;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +12,7 @@ import java.util.Map;
 public class WeekProgram {
     /* Switches are stored in a hashmap, mapping every day to its
     corresponding set of switches */
-    Map<String, ArrayList<Switch>> data = new HashMap<String, ArrayList<Switch>>();
+    public Map<String, ArrayList<Switch>> data = new HashMap<String, ArrayList<Switch>>();
     private int[] nr_switches_active;
     public static String[] valid_days = { "Monday", "Tuesday", "Wednesday",
             "Thursday", "Friday", "Saturday", "Sunday" };
@@ -101,6 +102,8 @@ public class WeekProgram {
         }
         set_durations();
     }
+
+
 
     public String toXML() throws NullPointerException {
         StringBuilder build = new StringBuilder();
@@ -268,5 +271,24 @@ public class WeekProgram {
             mins = "0" + mins;
 
         return hours + ":" + mins;
+    }
+
+
+    /**
+     * New fancy ass methods here.
+     *
+     * @param daynumber
+     * @param
+     * @return
+     */
+
+    public ArrayList<Switch> getSwitchArrayL(int daynumber){
+        String day = this.valid_days[daynumber];
+        AddSwitch(700, 1200, "day", "Tuesday");
+        //AddSwitch(1300, 1400, "night", "Tuesday");
+        ArrayList<Switch> switches = this.data.get(day);
+
+
+        return switches;
     }
 }

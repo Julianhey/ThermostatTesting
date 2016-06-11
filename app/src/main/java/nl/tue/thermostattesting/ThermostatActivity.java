@@ -110,7 +110,7 @@ public class ThermostatActivity extends AppCompatActivity {
                     vacViewS = HeatingSystem.get("weekProgramState");
 
 
-                    //wpg = HeatingSystem.getWeekProgram();
+
 
                 } catch (Exception e) {
                     System.err.println("Error from getdata "+e);
