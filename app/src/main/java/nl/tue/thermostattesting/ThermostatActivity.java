@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -23,8 +24,7 @@ import java.math.BigDecimal;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 
 public class ThermostatActivity extends AppCompatActivity {
 
@@ -62,10 +62,10 @@ public class ThermostatActivity extends AppCompatActivity {
         timeView = (TextView) findViewById(R.id.timeView);
 
 
-        Button bPlus = (Button) findViewById(R.id.bPlus);
-        Button bPlus0_1 = (Button) findViewById(R.id.bPlus0_1);
-        Button bMinus = (Button) findViewById(R.id.bMinus);
-        Button bMinus0_1 = (Button) findViewById(R.id.bMinus0_1);
+        ImageView bPlus = (ImageView) findViewById(R.id.bPlus);
+        ImageView bPlus0_1 = (ImageView) findViewById(R.id.bPlus0_1);
+        ImageView bMinus = (ImageView) findViewById(R.id.bMinus);
+        ImageView bMinus0_1 = (ImageView) findViewById(R.id.bMinus0_1);
         Button scheduleReturnButton = (Button) findViewById(R.id.ScheduleReturnButton);
 
 
@@ -92,7 +92,7 @@ public class ThermostatActivity extends AppCompatActivity {
         weekOverview.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                pause();
+
 
                 Intent intent = new Intent(view.getContext(), WeekOverview.class);
                 startActivity(intent);
@@ -174,104 +174,17 @@ public class ThermostatActivity extends AppCompatActivity {
         super.onResume();
 
         notinOverview = true;
-        System.out.println("It is being rescheduled");
-        //reScheduleTimer();
         resume();
         getcurrentTD();
 
-        /**
-        setContentView(R.layout.activity_thermostat);
-
-        dayView = (TextView) findViewById(R.id.dayView);
-        timeView = (TextView) findViewById(R.id.timeView);
-        dayTempView = (TextView) findViewById(R.id.dayTempView);
-        nightTempView = (TextView) findViewById(R.id.nightTempView);
-        vacView = (TextView) findViewById(R.id.vacView);
-
-        Button bPlus = (Button) findViewById(R.id.bPlus);
-        Button bPlus0_1 = (Button) findViewById(R.id.bPlus0_1);
-        Button bMinus = (Button) findViewById(R.id.bMinus);
-        Button bMinus0_1 = (Button) findViewById(R.id.bMinus0_1);
-        Button infoButton = (Button) findViewById(R.id.infoButton);
-
-
-        notinOverview = true;
-
-        temp = (TextView) findViewById(R.id.temp);
-        Button weekOverview = (Button) findViewById(R.id.week_overview);
-        temp.setText("- \u2103");
-        getcurrentTDTi();
-        System.out.println(vtemp);
-        try {
-            Thread.sleep(1000);                 //1000 milliseconds is one second.
-        } catch(InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
-        temp.setText(vtemp+" \u2103");
-        dayView.setText(dayViewS);
-        timeView.setText(timeViewS);
-
-
-        weekOverview.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                notinOverview = false;
-
-                Intent intent = new Intent(view.getContext(), WeekOverview.class);
-                startActivity(intent);
-            }
-        });
-
-
-        bPlus.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                vtemp = vtemp.add(one);
-                temp.setText(vtemp+" \u2103");
-
-            }
-        });
-
-        bPlus0_1.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                vtemp = vtemp.add(pointone);
-                temp.setText(vtemp+" \u2103");
-
-            }
-        });
-
-        assert bMinus != null;
-        bMinus.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                vtemp = vtemp.subtract(one);
-                temp.setText(vtemp+" \u2103");
-
-            }
-        });
-
-
-        bMinus0_1.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                vtemp = vtemp.subtract(pointone);
-                temp.setText(vtemp+" \u2103");
-
-            }
-        });
-
-
-        infoButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                getAndSetInfo();
-            }
-        });
-
-         */
     }
 
+    protected void onPause(){
+        super.onPause();
+
+        notinOverview = false;
+        pause();
+    }
     public void getAndSetInfo() {
         new Thread(new Runnable() {
             @Override

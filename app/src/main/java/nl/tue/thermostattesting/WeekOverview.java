@@ -1,6 +1,7 @@
 package nl.tue.thermostattesting;
 
         import android.app.Activity;
+        import android.content.Intent;
         import android.os.Bundle;
         import android.support.v7.app.AppCompatActivity;
         import android.support.v7.widget.Toolbar;
@@ -11,6 +12,9 @@ package nl.tue.thermostattesting;
         import android.widget.Spinner;
         import android.widget.SpinnerAdapter;
         import android.widget.TextView;
+        import android.widget.CompoundButton;
+
+
 
         import org.thermostatapp.util.HeatingSystem;
         import org.thermostatapp.util.Switch;
@@ -26,6 +30,8 @@ package nl.tue.thermostattesting;
 public class WeekOverview extends AppCompatActivity {
 
     Button Mondaybutton, Tuesdaybutton, Wednesdaybutton, Thursdaybutton, Fridaybutton, Saturdaybutton, Sundaybutton;
+    Button thermostat_activity;
+    android.widget.Switch vacSwitch;
     WeekProgram wpg;
     String Tuesday, dayViewS, timeViewS, currTempViewS,dayTempViewS, nightTempViewS, vacViewS;
     ArrayList<Switch> TuesdaySwitches;
@@ -45,6 +51,8 @@ public class WeekOverview extends AppCompatActivity {
         //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.Week_Preset_Names, android.R.layout.simple_spinner_dropdown_item);
         //presetSpinner.setAdapter(adapter);
 
+
+
         timeBlockViews[0] = (TextView)findViewById(R.id.timeBlock0);
         timeBlockViews[1] = (TextView)findViewById(R.id.timeBlock1);
         timeBlockViews[2] = (TextView)findViewById(R.id.timeBlock2);
@@ -56,8 +64,46 @@ public class WeekOverview extends AppCompatActivity {
         timeBlockViews[8] = (TextView)findViewById(R.id.timeBlock8);
 
 
-        //getanddisplaydata button
+        thermostat_activity = (Button) findViewById(R.id.thermostat_activity);
         Mondaybutton = (Button)findViewById(R.id.Mondaybutton);
+        vacSwitch = (android.widget.Switch) findViewById(R.id.Vacswitch);
+
+
+        thermostat_activity.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                finish();
+            }
+        });
+
+
+        vacSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                HeatingSystem.put("weekProgramState", "off");
+                            } catch (Exception e) {
+                                System.err.println("Error from getdata " + e);
+                            }
+                        }
+                        }).start();
+                } else {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                    try {
+                        HeatingSystem.put("weekProgramState", "on");
+                    } catch (Exception e) {
+                        System.err.println("Error from getdata " + e);
+                    }
+                }
+            }).start();
+                }
+            }
+        });
 
         Mondaybutton.setOnClickListener(new View.OnClickListener(){
 
