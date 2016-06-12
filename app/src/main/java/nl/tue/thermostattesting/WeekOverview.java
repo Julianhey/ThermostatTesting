@@ -29,13 +29,15 @@ public class WeekOverview extends AppCompatActivity {
     WeekProgram wpg;
     String Tuesday, dayViewS, timeViewS, currTempViewS,dayTempViewS, nightTempViewS, vacViewS;
     ArrayList<Switch> TuesdaySwitches;
-    TextView dayView, timeView, currTempView, dayTempView, nightTempView, vacView;
+    //TextView timeBlock0, timeBlock1, timeBlock2, timeBlock3, timeBlock4, timeBlock5, timeBlock6, timeBlock7, timeBlock8;
+    String [] timeBlockS = new String[9];
+    TextView[] timeBlockViews = new TextView[9];
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.week_overview);
 
         //Code for a spinner if needed.
@@ -43,12 +45,16 @@ public class WeekOverview extends AppCompatActivity {
         //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.Week_Preset_Names, android.R.layout.simple_spinner_dropdown_item);
         //presetSpinner.setAdapter(adapter);
 
-        dayView = (TextView) findViewById(R.id.dayView);
-        timeView = (TextView) findViewById(R.id.timeView);
-        currTempView = (TextView) findViewById(R.id.currTempView);
-        dayTempView = (TextView) findViewById(R.id.dayTempView);
-        nightTempView = (TextView) findViewById(R.id.nightTempView);
-        vacView = (TextView) findViewById(R.id.vacView);
+        timeBlockViews[0] = (TextView)findViewById(R.id.timeBlock0);
+        timeBlockViews[1] = (TextView)findViewById(R.id.timeBlock1);
+        timeBlockViews[2] = (TextView)findViewById(R.id.timeBlock2);
+        timeBlockViews[3] = (TextView)findViewById(R.id.timeBlock3);
+        timeBlockViews[4] = (TextView)findViewById(R.id.timeBlock4);
+        timeBlockViews[5] = (TextView)findViewById(R.id.timeBlock5);
+        timeBlockViews[6] = (TextView)findViewById(R.id.timeBlock6);
+        timeBlockViews[7] = (TextView)findViewById(R.id.timeBlock7);
+        timeBlockViews[8] = (TextView)findViewById(R.id.timeBlock8);
+
 
         //getanddisplaydata button
         Mondaybutton = (Button)findViewById(R.id.Mondaybutton);
@@ -58,13 +64,14 @@ public class WeekOverview extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                getAndSetInfo();
+                getAndDisplayWPG();
+
             }
         });
 
     }
 
-    public void getAndSetInfo() {
+    public void getAndDisplayWPG() {
 
         new Thread(new Runnable() {
             @Override
@@ -80,19 +87,24 @@ public class WeekOverview extends AppCompatActivity {
 
 
                     wpg = HeatingSystem.getWeekProgram();
-                    //wpg.data.get(1).Add;
-
-                    HeatingSystem.setWeekProgram(wpg);
-                    //wpg.setDefault();
-
-
                     TuesdaySwitches = wpg.getSwitchArrayL(1);
-                    HeatingSystem.setWeekProgram(wpg);
 
-                    for (int i = 0; i < 10; i++) {
-                        System.out.println(TuesdaySwitches.get(i).toXMLString());
 
+
+                    for (int i = 0; i < 9; i++) {
+
+                        int startTime = TuesdaySwitches.get(i).getTime_Int();
+                        int durationTime = TuesdaySwitches.get(i).getDur();
+                        String startTimeS = int_time_to_string(startTime);
+                        String endTimeS = int_time_to_string(startTime + durationTime);
+                        if (TuesdaySwitches.get(i).getState()) {
+                            timeBlockS[i] = startTimeS + " - " + endTimeS;
+                        }else{
+                            timeBlockS[i] = "";
+                        }
                     }
+
+
 
 
                 } catch (Exception e) {
@@ -107,7 +119,30 @@ public class WeekOverview extends AppCompatActivity {
             Thread.currentThread().interrupt();
         }
 
+
+        for (int i = 0; i < 9; i++) {
+            if (TuesdaySwitches.get(i).getType().equals("night")) {
+                timeBlockViews[i].setBackgroundColor(android.graphics.Color.argb(255, 30, 144, 255));
+                timeBlockViews[i].setTextColor(android.graphics.Color.argb(255, 255, 255, 255));
+            }else if (TuesdaySwitches.get(i).getType().equals("day")){
+                timeBlockViews[i].setBackgroundColor(android.graphics.Color.argb(255, 240,230,140));
+            }
+            timeBlockViews[i].setText(timeBlockS[i]);
+        }
+
        // dayView.setText("Day: " + dayTempViewS);
 
+    }
+
+
+    String int_time_to_string(int time_var) {
+        String hours = Integer.toString(time_var / 100);
+        String mins = Integer.toString(time_var - time_var / 100 * 100);
+        if (time_var < 1000)
+            hours = "0" + hours;
+        if (time_var - time_var / 100 * 100 < 10)
+            mins = "0" + mins;
+
+        return hours + ":" + mins;
     }
 }

@@ -284,7 +284,7 @@ public class WeekProgram {
 
     public ArrayList<Switch> getSwitchArrayL(int daynumber){
         String day = this.valid_days[daynumber];
-        AddSwitch(700, 1200, "day", "Tuesday");
+        //AddSwitch(700, 1200, "day", "Tuesday");
         //AddSwitch(1300, 1400, "night", "Tuesday");
         ArrayList<Switch> switches = this.data.get(day);
 

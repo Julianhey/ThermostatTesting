@@ -1,16 +1,27 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/MainDarkGrey</item>
+        <item name="android:textColor">@color/MainDarkGrey</item>
+        <item name="android:background">@color/MainWhite</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
+        
     </style>
     <style name="button">
-        <item name="android:background">#000fff</item>
-        <item name="android:textColor">#ffffff</item>
+        <item name="android:background">@color/MainDarkGrey</item>
+        <item name="android:textColor">@color/MainWhite</item>
         <item name="android:layout_width">70dp</item>
+    </style>
+
+    <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">sans-serif</item>
     </style>
 
 </resources>
