@@ -72,9 +72,8 @@ public class ThermostatActivity extends AppCompatActivity {
 
         temp = (TextView) findViewById(R.id.temp);
         Button weekOverview = (Button) findViewById(R.id.week_overview);
-        temp.setText("- \u2103");
+
         getcurrentTD();
-        System.out.println(vtemp);
         try {
             Thread.sleep(1000);                 //1000 milliseconds is one second.
         } catch(InterruptedException ex) {

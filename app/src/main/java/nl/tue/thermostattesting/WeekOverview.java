@@ -9,6 +9,8 @@ package nl.tue.thermostattesting;
         import android.view.Window;
         import android.widget.ArrayAdapter;
         import android.widget.Button;
+        import android.widget.ImageView;
+        import android.widget.ListView;
         import android.widget.Spinner;
         import android.widget.SpinnerAdapter;
         import android.widget.TextView;
@@ -20,6 +22,7 @@ package nl.tue.thermostattesting;
         import org.thermostatapp.util.Switch;
         import org.thermostatapp.util.WeekProgram;
 
+        import java.math.BigDecimal;
         import java.util.ArrayList;
 
 /**
@@ -38,6 +41,17 @@ public class WeekOverview extends AppCompatActivity {
     //TextView timeBlock0, timeBlock1, timeBlock2, timeBlock3, timeBlock4, timeBlock5, timeBlock6, timeBlock7, timeBlock8;
     String [] timeBlockS = new String[9];
     TextView[] timeBlockViews = new TextView[9];
+
+    TextView tempDay, tempNight;
+    BigDecimal vtempD, vtempN;
+    BigDecimal pointone = new BigDecimal("0.1");
+    BigDecimal one = new BigDecimal("1");
+    BigDecimal five = new BigDecimal("5");
+    BigDecimal six = new BigDecimal("6");
+    BigDecimal thirty = new BigDecimal("30");
+    BigDecimal twenine = new BigDecimal("29");
+
+    private ListView switchListView;
 
 
     @Override
@@ -68,6 +82,29 @@ public class WeekOverview extends AppCompatActivity {
         Mondaybutton = (Button)findViewById(R.id.Mondaybutton);
         vacSwitch = (android.widget.Switch) findViewById(R.id.Vacswitch);
 
+        ImageView bPlus = (ImageView) findViewById(R.id.bPlus);
+        ImageView bPlus0_1 = (ImageView) findViewById(R.id.bPlus0_1);
+        ImageView bMinus = (ImageView) findViewById(R.id.bMinus);
+        ImageView bMinus0_1 = (ImageView) findViewById(R.id.bMinus0_1);
+        ImageView bPlusNight = (ImageView) findViewById(R.id.bPlusNight);
+        ImageView bPlus0_1Night = (ImageView) findViewById(R.id.bPlus0_1Night);
+        ImageView bMinusNight = (ImageView) findViewById(R.id.bMinusNight);
+        ImageView bMinus0_1Night = (ImageView) findViewById(R.id.bMinus0_1Night);
+
+        tempDay = (TextView) findViewById(R.id.tempDay);
+        tempNight = (TextView) findViewById(R.id.tempNight);
+
+        switchListView = (ListView) findViewById(R.id.SwitchlistView);
+
+        getcurrentT();
+        try {
+            Thread.sleep(500);                 //1000 milliseconds is one second.
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+        tempDay.setText(vtempD+" \u2103");
+        tempNight.setText(vtempN+" \u2103");
+
 
         thermostat_activity.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -76,6 +113,114 @@ public class WeekOverview extends AppCompatActivity {
             }
         });
 
+
+        assert bPlus != null;
+        bPlus.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                if (vtempD.compareTo(twenine) <= 0){
+                    vtempD = vtempD.add(one);
+                    tempDay.setText(vtempD+" \u2103");
+                }else{
+                    //Make a popup error thing that says that you cant set the temp to < 5
+                }
+            }
+        });
+
+        assert bPlus0_1 != null;
+        bPlus0_1.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                if (vtempD.compareTo(thirty) < 0){
+                    vtempD = vtempD.add(pointone);
+                    tempDay.setText(vtempD+" \u2103");
+                }else{
+                    //Make a popup error thing that says that you cant set the temp to < 5
+                }
+            }
+        });
+
+        assert bMinus != null;
+        bMinus.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                if (vtempD.compareTo(six) >= 0){
+                    vtempD = vtempD.subtract(one);
+                    tempDay.setText(vtempD+" \u2103");
+                }else{
+                    //Make a popup error thing that says that you cant set the temp to < 5
+                }
+
+            }
+        });
+
+
+        assert bMinus0_1 != null;
+        bMinus0_1.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                if (vtempD.compareTo(five) > 0){
+                    vtempD = vtempD.subtract(pointone);
+                    tempDay.setText(vtempD+" \u2103");
+                }else{
+                    //Make a popup error thing that says that you cant set the temp to < 5
+                }
+            }
+        });
+
+        assert bPlusNight != null;
+        bPlusNight.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                if (vtempN.compareTo(twenine) <= 0){
+                    vtempN = vtempN.add(one);
+                    tempNight.setText(vtempN+" \u2103");
+                }else{
+                    //Make a popup error thing that says that you cant set the temp to < 5
+                }
+            }
+        });
+
+        assert bPlus0_1Night != null;
+        bPlus0_1Night.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                if (vtempN.compareTo(thirty) < 0){
+                    vtempN = vtempN.add(pointone);
+                    tempNight.setText(vtempN+" \u2103");
+                }else{
+                    //Make a popup error thing that says that you cant set the temp to < 5
+                }
+            }
+        });
+
+        assert bMinusNight != null;
+        bMinusNight.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                if (vtempN.compareTo(six) >= 0){
+                    vtempN = vtempN.subtract(one);
+                    tempNight.setText(vtempN+" \u2103");
+                }else{
+                    //Make a popup error thing that says that you cant set the temp to < 5
+                }
+
+            }
+        });
+
+
+        assert bMinus0_1Night != null;
+        bMinus0_1Night.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                if (vtempN.compareTo(five) > 0){
+                    vtempN = vtempN.subtract(pointone);
+                    tempNight.setText(vtempN+" \u2103");
+                }else{
+                    //Make a popup error thing that says that you cant set the temp to < 5
+                }
+            }
+        });
 
         vacSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -105,12 +250,19 @@ public class WeekOverview extends AppCompatActivity {
             }
         });
 
+
+
+
         Mondaybutton.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
 
                 getAndDisplayWPG();
+
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                        WeekOverview.this, android.R.layout.simple_list_item_1, timeBlockS);
+                switchListView.setAdapter(arrayAdapter);
 
             }
         });
@@ -190,5 +342,26 @@ public class WeekOverview extends AppCompatActivity {
             mins = "0" + mins;
 
         return hours + ":" + mins;
+    }
+
+    public void getcurrentT() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    vtempD = new BigDecimal(HeatingSystem.get("dayTemperature"));             //.valueOf(vtemp);
+                    vtempD.setScale(10, BigDecimal.ROUND_CEILING);
+                    System.out.println(vtempD);
+                    vtempN = new BigDecimal(HeatingSystem.get("dayTemperature"));             //.valueOf(vtemp);
+                    vtempN.setScale(10, BigDecimal.ROUND_CEILING);
+                    System.out.println(vtempD);
+
+
+
+                } catch (Exception e) {
+                    System.err.println("Error from getdata "+e);
+                }
+            }
+        }).start();
     }
 }
