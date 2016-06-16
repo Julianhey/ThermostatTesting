@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/textView1"
+    android:layout_width="300dp"
+    android:layout_height="60dp"
+    android:drawableRight="@drawable/plus_resized"
+    android:drawablePadding="10dp"
+    android:paddingLeft="40dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp"
+    android:text="Monday"
+    android:gravity=""
+    android:background="@drawable/day_collapsed_resized"
+    android:textColor="@color/MainWhite"
+
+
+/>

@@ -1,29 +1,30 @@
 package nl.tue.thermostattesting;
 
-        import android.app.Activity;
-        import android.content.Intent;
-        import android.os.Bundle;
-        import android.support.v7.app.AppCompatActivity;
-        import android.support.v7.widget.Toolbar;
-        import android.view.View;
-        import android.view.Window;
-        import android.widget.ArrayAdapter;
-        import android.widget.Button;
-        import android.widget.ImageView;
-        import android.widget.ListView;
-        import android.widget.Spinner;
-        import android.widget.SpinnerAdapter;
-        import android.widget.TextView;
-        import android.widget.CompoundButton;
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.SparseArray;
+import android.view.View;
+import android.view.Window;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ExpandableListView;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
+import android.widget.TextView;
+import android.widget.CompoundButton;
 
 
+import org.thermostatapp.util.HeatingSystem;
+import org.thermostatapp.util.Switch;
+import org.thermostatapp.util.WeekProgram;
 
-        import org.thermostatapp.util.HeatingSystem;
-        import org.thermostatapp.util.Switch;
-        import org.thermostatapp.util.WeekProgram;
-
-        import java.math.BigDecimal;
-        import java.util.ArrayList;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 
 /**
  * Created by Julian on 23-5-2016.
@@ -32,14 +33,13 @@ package nl.tue.thermostattesting;
  */
 public class WeekOverview extends AppCompatActivity {
 
-    Button Mondaybutton, Tuesdaybutton, Wednesdaybutton, Thursdaybutton, Fridaybutton, Saturdaybutton, Sundaybutton;
     Button thermostat_activity;
     android.widget.Switch vacSwitch;
     WeekProgram wpg;
-    String Tuesday, dayViewS, timeViewS, currTempViewS,dayTempViewS, nightTempViewS, vacViewS;
-    ArrayList<Switch> TuesdaySwitches;
+    String Tuesday, dayViewS, timeViewS, currTempViewS, dayTempViewS, nightTempViewS, vacViewS;
+    ArrayList<Switch> DaySwitches;
     //TextView timeBlock0, timeBlock1, timeBlock2, timeBlock3, timeBlock4, timeBlock5, timeBlock6, timeBlock7, timeBlock8;
-    String [] timeBlockS = new String[9];
+    ArrayList<String> timeBlockS = new ArrayList<>();
     TextView[] timeBlockViews = new TextView[9];
 
     TextView tempDay, tempNight;
@@ -51,8 +51,11 @@ public class WeekOverview extends AppCompatActivity {
     BigDecimal thirty = new BigDecimal("30");
     BigDecimal twenine = new BigDecimal("29");
 
-    private ListView switchListView;
+    String[] valid_days = {"Monday", "Tuesday", "Wednesday",
+            "Thursday", "Friday", "Saturday", "Sunday"};
 
+
+    SparseArray<Group> groups = new SparseArray<Group>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,20 +69,8 @@ public class WeekOverview extends AppCompatActivity {
         //presetSpinner.setAdapter(adapter);
 
 
-
-        timeBlockViews[0] = (TextView)findViewById(R.id.timeBlock0);
-        timeBlockViews[1] = (TextView)findViewById(R.id.timeBlock1);
-        timeBlockViews[2] = (TextView)findViewById(R.id.timeBlock2);
-        timeBlockViews[3] = (TextView)findViewById(R.id.timeBlock3);
-        timeBlockViews[4] = (TextView)findViewById(R.id.timeBlock4);
-        timeBlockViews[5] = (TextView)findViewById(R.id.timeBlock5);
-        timeBlockViews[6] = (TextView)findViewById(R.id.timeBlock6);
-        timeBlockViews[7] = (TextView)findViewById(R.id.timeBlock7);
-        timeBlockViews[8] = (TextView)findViewById(R.id.timeBlock8);
-
-
         thermostat_activity = (Button) findViewById(R.id.thermostat_activity);
-        Mondaybutton = (Button)findViewById(R.id.Mondaybutton);
+        //Mondaybutton = (Button) findViewById(R.id.Mondaybutton);
         vacSwitch = (android.widget.Switch) findViewById(R.id.Vacswitch);
 
         ImageView bPlus = (ImageView) findViewById(R.id.bPlus);
@@ -94,60 +85,67 @@ public class WeekOverview extends AppCompatActivity {
         tempDay = (TextView) findViewById(R.id.tempDay);
         tempNight = (TextView) findViewById(R.id.tempNight);
 
-        switchListView = (ListView) findViewById(R.id.SwitchlistView);
+        ExpandableListView switchListView = (ExpandableListView) findViewById(R.id.SwitchlistView);
 
+        getWeekProgram();
         getcurrentT();
         try {
-            Thread.sleep(500);                 //1000 milliseconds is one second.
-        } catch(InterruptedException ex) {
+            Thread.sleep(300);                 //1000 milliseconds is one second.
+        } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
-        tempDay.setText(vtempD+" \u2103");
-        tempNight.setText(vtempN+" \u2103");
+        tempDay.setText(vtempD + " \u2103");
+        tempNight.setText(vtempN + " \u2103");
 
 
-        thermostat_activity.setOnClickListener(new View.OnClickListener(){
+
+        createData();
+        MyExpandableListAdapter adapter = new MyExpandableListAdapter(this,
+                groups);
+        switchListView.setAdapter(adapter);
+
+        thermostat_activity.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view){
+            public void onClick(View view) {
                 finish();
             }
         });
 
 
         assert bPlus != null;
-        bPlus.setOnClickListener(new View.OnClickListener(){
+        bPlus.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view){
-                if (vtempD.compareTo(twenine) <= 0){
+            public void onClick(View view) {
+                if (vtempD.compareTo(twenine) <= 0) {
                     vtempD = vtempD.add(one);
-                    tempDay.setText(vtempD+" \u2103");
-                }else{
+                    tempDay.setText(vtempD + " \u2103");
+                } else {
                     //Make a popup error thing that says that you cant set the temp to < 5
                 }
             }
         });
 
         assert bPlus0_1 != null;
-        bPlus0_1.setOnClickListener(new View.OnClickListener(){
+        bPlus0_1.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view){
-                if (vtempD.compareTo(thirty) < 0){
+            public void onClick(View view) {
+                if (vtempD.compareTo(thirty) < 0) {
                     vtempD = vtempD.add(pointone);
-                    tempDay.setText(vtempD+" \u2103");
-                }else{
+                    tempDay.setText(vtempD + " \u2103");
+                } else {
                     //Make a popup error thing that says that you cant set the temp to < 5
                 }
             }
         });
 
         assert bMinus != null;
-        bMinus.setOnClickListener(new View.OnClickListener(){
+        bMinus.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view){
-                if (vtempD.compareTo(six) >= 0){
+            public void onClick(View view) {
+                if (vtempD.compareTo(six) >= 0) {
                     vtempD = vtempD.subtract(one);
-                    tempDay.setText(vtempD+" \u2103");
-                }else{
+                    tempDay.setText(vtempD + " \u2103");
+                } else {
                     //Make a popup error thing that says that you cant set the temp to < 5
                 }
 
@@ -156,52 +154,52 @@ public class WeekOverview extends AppCompatActivity {
 
 
         assert bMinus0_1 != null;
-        bMinus0_1.setOnClickListener(new View.OnClickListener(){
+        bMinus0_1.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view){
-                if (vtempD.compareTo(five) > 0){
+            public void onClick(View view) {
+                if (vtempD.compareTo(five) > 0) {
                     vtempD = vtempD.subtract(pointone);
-                    tempDay.setText(vtempD+" \u2103");
-                }else{
+                    tempDay.setText(vtempD + " \u2103");
+                } else {
                     //Make a popup error thing that says that you cant set the temp to < 5
                 }
             }
         });
 
         assert bPlusNight != null;
-        bPlusNight.setOnClickListener(new View.OnClickListener(){
+        bPlusNight.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view){
-                if (vtempN.compareTo(twenine) <= 0){
+            public void onClick(View view) {
+                if (vtempN.compareTo(twenine) <= 0) {
                     vtempN = vtempN.add(one);
-                    tempNight.setText(vtempN+" \u2103");
-                }else{
+                    tempNight.setText(vtempN + " \u2103");
+                } else {
                     //Make a popup error thing that says that you cant set the temp to < 5
                 }
             }
         });
 
         assert bPlus0_1Night != null;
-        bPlus0_1Night.setOnClickListener(new View.OnClickListener(){
+        bPlus0_1Night.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view){
-                if (vtempN.compareTo(thirty) < 0){
+            public void onClick(View view) {
+                if (vtempN.compareTo(thirty) < 0) {
                     vtempN = vtempN.add(pointone);
-                    tempNight.setText(vtempN+" \u2103");
-                }else{
+                    tempNight.setText(vtempN + " \u2103");
+                } else {
                     //Make a popup error thing that says that you cant set the temp to < 5
                 }
             }
         });
 
         assert bMinusNight != null;
-        bMinusNight.setOnClickListener(new View.OnClickListener(){
+        bMinusNight.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view){
-                if (vtempN.compareTo(six) >= 0){
+            public void onClick(View view) {
+                if (vtempN.compareTo(six) >= 0) {
                     vtempN = vtempN.subtract(one);
-                    tempNight.setText(vtempN+" \u2103");
-                }else{
+                    tempNight.setText(vtempN + " \u2103");
+                } else {
                     //Make a popup error thing that says that you cant set the temp to < 5
                 }
 
@@ -210,19 +208,19 @@ public class WeekOverview extends AppCompatActivity {
 
 
         assert bMinus0_1Night != null;
-        bMinus0_1Night.setOnClickListener(new View.OnClickListener(){
+        bMinus0_1Night.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view){
-                if (vtempN.compareTo(five) > 0){
+            public void onClick(View view) {
+                if (vtempN.compareTo(five) > 0) {
                     vtempN = vtempN.subtract(pointone);
-                    tempNight.setText(vtempN+" \u2103");
-                }else{
+                    tempNight.setText(vtempN + " \u2103");
+                } else {
                     //Make a popup error thing that says that you cant set the temp to < 5
                 }
             }
         });
 
-        vacSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+        vacSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     new Thread(new Runnable() {
@@ -234,101 +232,72 @@ public class WeekOverview extends AppCompatActivity {
                                 System.err.println("Error from getdata " + e);
                             }
                         }
-                        }).start();
+                    }).start();
                 } else {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                    try {
-                        HeatingSystem.put("weekProgramState", "on");
-                    } catch (Exception e) {
-                        System.err.println("Error from getdata " + e);
-                    }
-                }
-            }).start();
+                            try {
+                                HeatingSystem.put("weekProgramState", "on");
+                            } catch (Exception e) {
+                                System.err.println("Error from getdata " + e);
+                            }
+                        }
+                    }).start();
                 }
             }
         });
 
-
-
-
-        Mondaybutton.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View v) {
-
-                getAndDisplayWPG();
-
-                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                        WeekOverview.this, android.R.layout.simple_list_item_1, timeBlockS);
-                switchListView.setAdapter(arrayAdapter);
-
-            }
-        });
 
     }
 
-    public void getAndDisplayWPG() {
+    public ArrayList<String> Switchlist(final int daynumber) {
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
 
-                    //dayViewS = HeatingSystem.get("day");
-                    //timeViewS = HeatingSystem.get("time");
-                    //currTempViewS = HeatingSystem.get("currentTemperature");
-                    //dayTempViewS = HeatingSystem.get("dayTemperature");
-                    //nightTempViewS = HeatingSystem.get("nightTemperature");
-                    //vacViewS = HeatingSystem.get("weekProgramState");
+                    DaySwitches = wpg.getSwitchArrayL(daynumber);
+                    timeBlockS.clear();
 
+                    for (int i = 0; i < 10; i++) {
 
-                    wpg = HeatingSystem.getWeekProgram();
-                    TuesdaySwitches = wpg.getSwitchArrayL(1);
-
-
-
-                    for (int i = 0; i < 9; i++) {
-
-                        int startTime = TuesdaySwitches.get(i).getTime_Int();
-                        int durationTime = TuesdaySwitches.get(i).getDur();
+                        int startTime = DaySwitches.get(i).getTime_Int();
+                        int durationTime = DaySwitches.get(i).getDur();
                         String startTimeS = int_time_to_string(startTime);
                         String endTimeS = int_time_to_string(startTime + durationTime);
-                        if (TuesdaySwitches.get(i).getState()) {
-                            timeBlockS[i] = startTimeS + " - " + endTimeS;
-                        }else{
-                            timeBlockS[i] = "";
+                        if (DaySwitches.get(i).getState()) {
+                            timeBlockS.add(startTimeS + " - " + endTimeS);
                         }
                     }
 
 
-
-
                 } catch (Exception e) {
-                    System.err.println("Error from getdata "+e);
+                    System.err.println("Error from getdata " + e);
                 }
             }
         }).start();
 
+
         try {
-            Thread.sleep(300);                 //1000 milliseconds is one second.
-        } catch(InterruptedException ex) {
+            Thread.sleep(500);                 //1000 milliseconds is one second.
+        } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
 
+/**
 
         for (int i = 0; i < 9; i++) {
-            if (TuesdaySwitches.get(i).getType().equals("night")) {
-                timeBlockViews[i].setBackgroundColor(android.graphics.Color.argb(255, 30, 144, 255));
-                timeBlockViews[i].setTextColor(android.graphics.Color.argb(255, 255, 255, 255));
-            }else if (TuesdaySwitches.get(i).getType().equals("day")){
-                timeBlockViews[i].setBackgroundColor(android.graphics.Color.argb(255, 240,230,140));
+            if (DaySwitches.get(i).getType().equals("night")) {
+                //Display night icon
+            } else if (DaySwitches.get(i).getType().equals("day")) {
+                //Display day icon
             }
-            timeBlockViews[i].setText(timeBlockS[i]);
         }
+         */
 
-       // dayView.setText("Day: " + dayTempViewS);
+        return timeBlockS;
 
     }
 
@@ -357,9 +326,37 @@ public class WeekOverview extends AppCompatActivity {
                     System.out.println(vtempD);
 
 
-
                 } catch (Exception e) {
-                    System.err.println("Error from getdata "+e);
+                    System.err.println("Error from getdata " + e);
+                }
+            }
+        }).start();
+    }
+
+    public void createData() {
+
+                for (int j = 0; j < 7; j++) {
+                    Group group = new Group(valid_days[j]);
+                    ArrayList<String> switches = Switchlist(j);
+
+
+
+                    for (int i = 0; i < switches.size(); i++) {
+                        group.children.add(switches.get(i));
+                    }
+                    groups.append(j, group);
+                }
+
+    }
+
+    void getWeekProgram(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    wpg = HeatingSystem.getWeekProgram();
+                }catch (Exception e){
+                    System.err.println("Error from getdata " + e);
                 }
             }
         }).start();
