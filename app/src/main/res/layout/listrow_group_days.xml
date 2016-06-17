@@ -5,13 +5,13 @@
     android:layout_width="300dp"
     android:layout_height="60dp"
     android:drawableRight="@drawable/plus_resized"
-    android:drawablePadding="10dp"
+
     android:paddingLeft="40dp"
-    android:paddingRight="16dp"
+    android:layout_marginLeft="10dp"
     android:paddingBottom="10dp"
     android:paddingTop="10dp"
     android:text="Monday"
-    android:gravity=""
+    android:gravity="center_horizontal"
     android:background="@drawable/day_collapsed_resized"
     android:textColor="@color/MainWhite"
 

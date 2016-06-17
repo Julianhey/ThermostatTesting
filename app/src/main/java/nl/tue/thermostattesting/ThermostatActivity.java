@@ -1,6 +1,7 @@
 package nl.tue.thermostattesting;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import org.thermostatapp.util.HeatingSystem;
+import org.thermostatapp.util.WeekProgram;
 
 import java.math.BigDecimal;
 import java.util.Timer;
@@ -29,6 +31,7 @@ import java.util.TimerTask;
 public class ThermostatActivity extends AppCompatActivity {
 
     //double vtemp;
+    WeekProgram wpg;
     TextView temp;
     BigDecimal vtemp;
     BigDecimal pointone = new BigDecimal("0.1");
@@ -73,16 +76,7 @@ public class ThermostatActivity extends AppCompatActivity {
         temp = (TextView) findViewById(R.id.temp);
         Button weekOverview = (Button) findViewById(R.id.week_overview);
 
-        getcurrentTD();
-        try {
-            Thread.sleep(1000);                 //1000 milliseconds is one second.
-        } catch(InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
-        temp.setText(vtemp+" \u2103");
-        dayView.setText(dayViewS);
-        timeView.setText(timeViewS);
-        //reScheduleTimer();
+
 
 
 
@@ -94,6 +88,9 @@ public class ThermostatActivity extends AppCompatActivity {
 
 
                 Intent intent = new Intent(view.getContext(), WeekOverview.class);
+                intent.putExtra("nightTemp", nightTempViewS);
+                intent.putExtra("dayTemp", dayTempViewS);
+
                 startActivity(intent);
             }
         });
@@ -174,7 +171,7 @@ public class ThermostatActivity extends AppCompatActivity {
 
         notinOverview = true;
         resume();
-        getcurrentTD();
+        new GetTemps().execute();
 
     }
 
@@ -218,6 +215,7 @@ public class ThermostatActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
+
                     vtemp = new BigDecimal(HeatingSystem.get("currentTemperature"));             //.valueOf(vtemp);
                     vtemp.setScale(10, BigDecimal.ROUND_CEILING);
                     System.out.println(vtemp);
@@ -230,6 +228,36 @@ public class ThermostatActivity extends AppCompatActivity {
             }
         }).start();
     }
+
+    private class GetTemps extends AsyncTask<Void, Void, Void> {
+
+
+        @Override
+        protected Void doInBackground(Void...params){
+
+            try{
+                vtemp = new BigDecimal(HeatingSystem.get("dayTemperature"));             //.valueOf(vtemp);
+                vtemp.setScale(10, BigDecimal.ROUND_CEILING);
+                dayViewS = HeatingSystem.get("day");
+
+
+            }catch (Exception e){
+                System.err.println("Error from getdata " + e);
+            }
+
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void result){
+
+            temp.setText(vtemp + " \u2103");
+            dayView.setText(dayViewS);
+            timeView.setText(timeViewS);
+
+
+        }
+    }
+
 
 
     public void pause(){
