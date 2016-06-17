@@ -1,6 +1,7 @@
 package nl.tue.thermostattesting;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
@@ -33,6 +34,10 @@ public class ThermostatActivity extends AppCompatActivity {
     //double vtemp;
     WeekProgram wpg;
     TextView temp;
+    ImageView bPlus;
+    ImageView bPlus0_1;
+    ImageView bMinus;
+    ImageView bMinus0_1;
     BigDecimal vtemp;
     BigDecimal pointone = new BigDecimal("0.1");
     BigDecimal one = new BigDecimal("1");
@@ -40,7 +45,7 @@ public class ThermostatActivity extends AppCompatActivity {
     BigDecimal six = new BigDecimal("6");
     BigDecimal thirty = new BigDecimal("30");
     BigDecimal twenine = new BigDecimal("29");
-    String dayViewS, timeViewS, currTempViewS,dayTempViewS, nightTempViewS, vacViewS;
+    String dayViewS, timeViewS, currTempViewS, dayTempViewS, nightTempViewS, vacViewS;
     TextView dayView, timeView, currTempView, dayTempView, nightTempView, vacView;
     static int counter = 0;
     Timer timer;
@@ -56,30 +61,17 @@ public class ThermostatActivity extends AppCompatActivity {
         //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_thermostat);
 
-
-
-
-
-
         dayView = (TextView) findViewById(R.id.dayView);
         timeView = (TextView) findViewById(R.id.timeView);
 
-
-        ImageView bPlus = (ImageView) findViewById(R.id.bPlus);
-        ImageView bPlus0_1 = (ImageView) findViewById(R.id.bPlus0_1);
-        ImageView bMinus = (ImageView) findViewById(R.id.bMinus);
-        ImageView bMinus0_1 = (ImageView) findViewById(R.id.bMinus0_1);
+        bPlus = (ImageView) findViewById(R.id.bPlus);
+        bPlus0_1 = (ImageView) findViewById(R.id.bPlus0_1);
+        bMinus = (ImageView) findViewById(R.id.bMinus);
+        bMinus0_1 = (ImageView) findViewById(R.id.bMinus0_1);
         Button scheduleReturnButton = (Button) findViewById(R.id.ScheduleReturnButton);
-
-
 
         temp = (TextView) findViewById(R.id.temp);
         Button weekOverview = (Button) findViewById(R.id.week_overview);
-
-
-
-
-
 
         assert weekOverview != null;
         weekOverview.setOnClickListener(new View.OnClickListener(){
@@ -95,7 +87,6 @@ public class ThermostatActivity extends AppCompatActivity {
             }
         });
 
-
         assert bPlus != null;
         bPlus.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -103,8 +94,7 @@ public class ThermostatActivity extends AppCompatActivity {
                 if (vtemp.compareTo(twenine) <= 0){
                     vtemp = vtemp.add(one);
                     temp.setText(vtemp+" \u2103");
-                }else{
-                    //Make a popup error thing that says that you cant set the temp to < 5
+                    fixArrows();
                 }
             }
         });
@@ -116,8 +106,7 @@ public class ThermostatActivity extends AppCompatActivity {
                 if (vtemp.compareTo(thirty) < 0){
                     vtemp = vtemp.add(pointone);
                     temp.setText(vtemp+" \u2103");
-                }else{
-                    //Make a popup error thing that says that you cant set the temp to < 5
+                    fixArrows();
                 }
             }
         });
@@ -126,13 +115,11 @@ public class ThermostatActivity extends AppCompatActivity {
         bMinus.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                if (vtemp.compareTo(six) >= 0){
+                if (vtemp.compareTo(six) >= 0) {
                     vtemp = vtemp.subtract(one);
-                    temp.setText(vtemp+" \u2103");
-                }else{
-                    //Make a popup error thing that says that you cant set the temp to < 5
+                    temp.setText(vtemp + " \u2103");
+                    fixArrows();
                 }
-
             }
         });
 
@@ -142,10 +129,9 @@ public class ThermostatActivity extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 if (vtemp.compareTo(five) > 0){
-                vtemp = vtemp.subtract(pointone);
-                temp.setText(vtemp+" \u2103");
-                    }else{
-                    //Make a popup error thing that says that you cant set the temp to < 5
+                    vtemp = vtemp.subtract(pointone);
+                    temp.setText(vtemp+" \u2103");
+                    fixArrows();
                 }
             }
         });
@@ -182,6 +168,28 @@ public class ThermostatActivity extends AppCompatActivity {
         pause();
     }
 
+    void fixArrows() {
+        if (vtemp.compareTo(thirty) == 0) {
+            bPlus0_1.setImageResource(R.drawable.arrow_up_gray);
+        } else {
+            bPlus0_1.setImageResource(R.drawable.arrow_up);
+        }
+        if (vtemp.compareTo(twenine) > 0) {
+            bPlus.setImageResource(R.drawable.arrow_up_gray);
+        } else {
+            bPlus.setImageResource(R.drawable.arrow_up);
+        }
+        if (vtemp.compareTo(six) < 0) {
+            bMinus.setImageResource(R.drawable.arrow_down_gray);
+        } else {
+            bMinus.setImageResource(R.drawable.arrow_down);
+        }
+        if (vtemp.compareTo(five) == 0) {
+            bMinus0_1.setImageResource(R.drawable.arrow_down_gray);
+        } else {
+            bMinus0_1.setImageResource(R.drawable.arrow_down);
+        }
+    }
 
     private class GetTemps extends AsyncTask<Void, Void, Void> {
 
@@ -237,7 +245,7 @@ public class ThermostatActivity extends AppCompatActivity {
                 updatetimeView.sendEmptyMessage(0);
             }
         }
-        };
+    }
 
 
 

@@ -414,8 +414,6 @@ public class WeekOverview extends AppCompatActivity {
                     Group group = new Group(valid_days[j]);
                     ArrayList<String> switches = Switchlist(j);
 
-
-
                     for (int i = 0; i < switches.size(); i++) {
                         group.children.add(switches.get(i));
                     }
@@ -449,7 +447,7 @@ public class WeekOverview extends AppCompatActivity {
                 vtempD = new BigDecimal(HeatingSystem.get("dayTemperature"));             //.valueOf(vtemp);
                 vtempD.setScale(10, BigDecimal.ROUND_CEILING);
                 System.out.println(vtempD);
-                vtempN = new BigDecimal(HeatingSystem.get("dayTemperature"));             //.valueOf(vtemp);
+                vtempN = new BigDecimal(HeatingSystem.get("nightTemperature"));             //.valueOf(vtemp);
                 vtempN.setScale(10, BigDecimal.ROUND_CEILING);
                 System.out.println(vtempD);
 
@@ -464,8 +462,6 @@ public class WeekOverview extends AppCompatActivity {
 
             tempDay.setText(vtempD + " \u2103");
             tempNight.setText(vtempN + " \u2103");
-
-
         }
     }
 
