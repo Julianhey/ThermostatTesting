@@ -219,6 +219,7 @@ public class ThermostatActivity extends AppCompatActivity {
                     vtemp = new BigDecimal(HeatingSystem.get("currentTemperature"));             //.valueOf(vtemp);
                     vtemp.setScale(10, BigDecimal.ROUND_CEILING);
                     System.out.println(vtemp);
+                    wpg = HeatingSystem.getWeekProgram();
 
                     dayViewS = HeatingSystem.get("day");
 
