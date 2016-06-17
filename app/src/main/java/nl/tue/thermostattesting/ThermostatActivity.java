@@ -155,7 +155,7 @@ public class ThermostatActivity extends AppCompatActivity {
         scheduleReturnButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                getAndSetInfo();
+
             }
         });
 
@@ -181,54 +181,7 @@ public class ThermostatActivity extends AppCompatActivity {
         notinOverview = false;
         pause();
     }
-    public void getAndSetInfo() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
 
-
-                    dayTempViewS = HeatingSystem.get("dayTemperature");
-                    nightTempViewS = HeatingSystem.get("nightTemperature");
-                    vacViewS = HeatingSystem.get("weekProgramState");
-
-
-
-
-                } catch (Exception e) {
-                    System.err.println("Error from getdata "+e);
-                }
-            }
-        }).start();
-
-        try {
-            Thread.sleep(300);                 //1000 milliseconds is one second.
-        } catch(InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
-
-
-
-    }
-    public void getcurrentTD() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-
-                    vtemp = new BigDecimal(HeatingSystem.get("currentTemperature"));             //.valueOf(vtemp);
-                    vtemp.setScale(10, BigDecimal.ROUND_CEILING);
-                    System.out.println(vtemp);
-                    wpg = HeatingSystem.getWeekProgram();
-
-                    dayViewS = HeatingSystem.get("day");
-
-                } catch (Exception e) {
-                    System.err.println("Error from getdata "+e);
-                }
-            }
-        }).start();
-    }
 
     private class GetTemps extends AsyncTask<Void, Void, Void> {
 
