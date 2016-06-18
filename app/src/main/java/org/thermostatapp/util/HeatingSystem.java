@@ -325,7 +325,7 @@ public class HeatingSystem {
 
         String link = "";
         boolean match = false;
-        String[] valid_names = { "day", "time", "currentTemperature",
+        String[] valid_names = { "day", "time", "currentTemperature", "targetTemperature",
                 "dayTemperature", "nightTemperature", "weekProgramState" };
         for (int i = 0; i < valid_names.length; i++) {
             if (attribute_name.equalsIgnoreCase(valid_names[i])) {
@@ -366,6 +366,9 @@ public class HeatingSystem {
             }
         } else if (attribute_name.equals("currentTemperature")) {
             tag_name = "current_temperature";
+            inTemperatureBoundaries(value);
+        } else if (attribute_name.equals("targetTemperature")) {
+            tag_name = "target_temperature";
             inTemperatureBoundaries(value);
         } else if (attribute_name.equals("dayTemperature")) {
             tag_name = "day_temperature";
