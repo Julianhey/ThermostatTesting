@@ -2,12 +2,14 @@ package nl.tue.thermostattesting;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.SparseArray;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -36,7 +38,7 @@ import java.util.List;
  * Edited by Koen on 31-5 at 17.56
  * Edit2
  */
-public class WeekOverview extends AppCompatActivity {
+public class WeekOverview extends Activity {
 
     Button thermostat_activity;
     android.widget.Switch vacSwitch;
@@ -57,6 +59,8 @@ public class WeekOverview extends AppCompatActivity {
     BigDecimal twenine = new BigDecimal("29");
 
     LinearLayout linlaHeaderProgress;
+    LinearLayout week_overview;
+    ViewGroup.LayoutParams params;
 
     ExpandableListView switchListView;
 
@@ -74,6 +78,7 @@ public class WeekOverview extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.week_overview);
+        week_overview = new LinearLayout(this);
 
         //Code for a spinner if needed.
         //Spinner presetSpinner = (Spinner) findViewById(R.id.presetSpinner);
@@ -94,12 +99,15 @@ public class WeekOverview extends AppCompatActivity {
         ImageView bMinusNight = (ImageView) findViewById(R.id.bMinusNight);
         ImageView bMinus0_1Night = (ImageView) findViewById(R.id.bMinus0_1Night);
 
+
+
         tempDay = (TextView) findViewById(R.id.tempDay);
         tempNight = (TextView) findViewById(R.id.tempNight);
 
         linlaHeaderProgress = (LinearLayout) findViewById(R.id.linlaHeaderProgress);
 
         switchListView = (ExpandableListView) findViewById(R.id.SwitchlistView);
+
 
         //getWeekProgram();
         //getcurrentT();
@@ -111,13 +119,17 @@ public class WeekOverview extends AppCompatActivity {
 
 
 
-        switchListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+
+
+
+
+
+        switchListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
 
             @Override
-            public void onGroupCollapse(int groupPosition) {
-                Toast.makeText(getApplicationContext(),
-                        listDataHeader.get(groupPosition) + " Collapsed",
-                        Toast.LENGTH_SHORT).show();
+            public void onGroupExpand(int groupPosition) {
+
+                        listDataHeader.get(groupPosition);
 
             }
         });
@@ -138,6 +150,7 @@ public class WeekOverview extends AppCompatActivity {
                 if (vtempD.compareTo(twenine) <= 0) {
                     vtempD = vtempD.add(one);
                     tempDay.setText(vtempD + " \u2103");
+                    new SetTemp().execute();
                 } else {
                     //Make a popup error thing that says that you cant set the temp to < 5
                 }
@@ -332,23 +345,7 @@ public class WeekOverview extends AppCompatActivity {
         return hours + ":" + mins;
     }
 
-    private void prepareListData() {
-        listDataHeader = new ArrayList<String>();
-        listDataChild = new HashMap<String, List<String>>();
 
-        // Adding child data
-        for (int j = 0; j < 7; j++) {
-            listDataHeader.add(valid_days[j]);
-
-
-            // Adding child data
-            List<String> switches = Switchlist(j);
-
-
-
-            listDataChild.put(listDataHeader.get(0), switches); // Header, Child data
-        }
-    }
 
 
     private class GetInfo2nd extends AsyncTask<Void, Void, Void>{
@@ -390,7 +387,7 @@ public class WeekOverview extends AppCompatActivity {
         protected void onPostExecute(Void result){
 
             ExpandableListAdapter2 adapter = new ExpandableListAdapter2(WeekOverview.this,
-                    listDataHeader,listDataChild);
+                    listDataHeader,listDataChild, week_overview);
             switchListView.setAdapter(adapter);
             linlaHeaderProgress.setVisibility(View.GONE);
 
@@ -398,44 +395,7 @@ public class WeekOverview extends AppCompatActivity {
     }
 
 
-    private class GetInfo extends AsyncTask<Void, Void, Void>{
-        @Override
-        protected void onPreExecute(){
-            linlaHeaderProgress.setVisibility(View.VISIBLE);
-        }
 
-        @Override
-        protected Void doInBackground(Void...params){
-
-            try{
-                wpg = HeatingSystem.getWeekProgram();
-
-                for (int j = 0; j < 7; j++) {
-                    Group group = new Group(valid_days[j]);
-                    ArrayList<String> switches = Switchlist(j);
-
-                    for (int i = 0; i < switches.size(); i++) {
-                        group.children.add(switches.get(i));
-                    }
-                    groups.append(j, group);
-                }
-
-            }catch (Exception e){
-                System.err.println("Error from getdata " + e);
-            }
-
-            return null;
-        }
-        @Override
-        protected void onPostExecute(Void result){
-
-            MyExpandableListAdapter adapter = new MyExpandableListAdapter(WeekOverview.this,
-                    groups);
-            switchListView.setAdapter(adapter);
-            linlaHeaderProgress.setVisibility(View.GONE);
-
-        }
-    }
 
     private class GetTemps extends AsyncTask<Void, Void, Void>{
 
@@ -447,7 +407,7 @@ public class WeekOverview extends AppCompatActivity {
                 vtempD = new BigDecimal(HeatingSystem.get("dayTemperature"));             //.valueOf(vtemp);
                 vtempD.setScale(10, BigDecimal.ROUND_CEILING);
                 System.out.println(vtempD);
-                vtempN = new BigDecimal(HeatingSystem.get("nightTemperature"));             //.valueOf(vtemp);
+                vtempN = new BigDecimal(HeatingSystem.get("dayTemperature"));             //.valueOf(vtemp);
                 vtempN.setScale(10, BigDecimal.ROUND_CEILING);
                 System.out.println(vtempD);
 
@@ -462,6 +422,34 @@ public class WeekOverview extends AppCompatActivity {
 
             tempDay.setText(vtempD + " \u2103");
             tempNight.setText(vtempN + " \u2103");
+
+
+        }
+    }
+
+    private class SetTemp extends AsyncTask<Void, Void, Void>{
+
+
+        @Override
+        protected Void doInBackground(Void...params){
+
+            try{
+                HeatingSystem.put("nightTemperature", "6.0");
+
+
+            }catch (Exception e){
+                System.err.println("Error from getdata " + e);
+            }
+
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void result){
+
+            tempDay.setText(vtempD + " \u2103");
+            tempNight.setText(vtempN + " \u2103");
+
+
         }
     }
 

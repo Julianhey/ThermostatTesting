@@ -5,7 +5,7 @@
         android:id="@+id/half_overlay"
         android:drawable="@drawable/day_expanded"
         android:width="300dp"
-        android:height="60dp"
+        android:height="50dp"
         />
 
 </layer-list>

@@ -60,6 +60,8 @@ tools:context="nl.tue.thermostattesting.WeekOverview">
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Day"
+                android:drawableLeft="@drawable/sun_dark_resized"
+                android:drawablePadding="2dp"
                 android:textSize="20dp"
                 android:id="@+id/dayView"
                 android:background="#00000000" />
@@ -139,6 +141,8 @@ tools:context="nl.tue.thermostattesting.WeekOverview">
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Night"
+                android:drawableLeft="@drawable/moon_dark_resized"
+                android:drawablePadding="2dp"
                 android:textSize="20dp"
                 android:id="@+id/NightView"
                 android:background="#00000000" />
@@ -223,7 +227,8 @@ tools:context="nl.tue.thermostattesting.WeekOverview">
         android:layout_height="fill_parent"
         android:gravity="center"
         android:orientation="vertical"
-        android:visibility="gone" >
+        android:visibility="gone"
+        android:background="#00000000">
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -243,8 +248,10 @@ tools:context="nl.tue.thermostattesting.WeekOverview">
         android:id="@+id/SwitchlistView"
         android:layout_gravity="center_horizontal"
         android:background="#00000000"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="10dp"
+        android:childDivider="#00000000"
+
+        android:divider="#00000000"
+        android:dividerHeight="5dp"
         android:groupIndicator="@null"/>
 
 </LinearLayout>
