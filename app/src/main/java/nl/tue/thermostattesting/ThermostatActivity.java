@@ -46,7 +46,7 @@ public class ThermostatActivity extends AppCompatActivity {
     BigDecimal thirty = new BigDecimal("30");
     BigDecimal twenine = new BigDecimal("29");
     String dayViewS, timeViewS, currTempViewS, dayTempViewS, nightTempViewS, vacViewS;
-    TextView dayView, timeView, currTempView, dayTempView, nightTempView, vacView;
+    TextView dayView, timeView, currTempView, dayTempView, nightTempView, vacView, tempWarningView, currentTempView;
     static int counter = 0;
     Timer timer;
     TimerTask timerTask;
@@ -63,6 +63,8 @@ public class ThermostatActivity extends AppCompatActivity {
 
         dayView = (TextView) findViewById(R.id.dayView);
         timeView = (TextView) findViewById(R.id.timeView);
+        tempWarningView = (TextView) findViewById(R.id.tempWarningView);
+        currentTempView = (TextView) findViewById(R.id.currentTempView);
 
         bPlus = (ImageView) findViewById(R.id.bPlus);
         bPlus0_1 = (ImageView) findViewById(R.id.bPlus0_1);
@@ -95,6 +97,7 @@ public class ThermostatActivity extends AppCompatActivity {
                     vtemp = vtemp.add(one);
                     temp.setText(vtemp+" \u2103");
                     fixArrows();
+                    new SetTemp().execute();
                 }
             }
         });
@@ -107,6 +110,7 @@ public class ThermostatActivity extends AppCompatActivity {
                     vtemp = vtemp.add(pointone);
                     temp.setText(vtemp+" \u2103");
                     fixArrows();
+                    new SetTemp().execute();
                 }
             }
         });
@@ -119,6 +123,7 @@ public class ThermostatActivity extends AppCompatActivity {
                     vtemp = vtemp.subtract(one);
                     temp.setText(vtemp + " \u2103");
                     fixArrows();
+                    new SetTemp().execute();
                 }
             }
         });
@@ -132,6 +137,7 @@ public class ThermostatActivity extends AppCompatActivity {
                     vtemp = vtemp.subtract(pointone);
                     temp.setText(vtemp+" \u2103");
                     fixArrows();
+                    new SetTemp().execute();
                 }
             }
         });
@@ -144,11 +150,6 @@ public class ThermostatActivity extends AppCompatActivity {
 
             }
         });
-
-
-
-
-
     }
 
     @Override
@@ -158,7 +159,6 @@ public class ThermostatActivity extends AppCompatActivity {
         notinOverview = true;
         resume();
         new GetTemps().execute();
-
     }
 
     protected void onPause(){
@@ -193,15 +193,14 @@ public class ThermostatActivity extends AppCompatActivity {
 
     private class GetTemps extends AsyncTask<Void, Void, Void> {
 
-
         @Override
         protected Void doInBackground(Void...params){
 
             try{
-                vtemp = new BigDecimal(HeatingSystem.get("dayTemperature"));             //.valueOf(vtemp);
+                vtemp = new BigDecimal(HeatingSystem.get("targetTemperature"));             //.valueOf(vtemp);
                 vtemp.setScale(10, BigDecimal.ROUND_CEILING);
                 dayViewS = HeatingSystem.get("day");
-
+                vacViewS = HeatingSystem.get("weekProgramState");
 
             }catch (Exception e){
                 System.err.println("Error from getdata " + e);
@@ -216,11 +215,27 @@ public class ThermostatActivity extends AppCompatActivity {
             dayView.setText(dayViewS);
             timeView.setText(timeViewS);
 
-
+            if (vacViewS.equals("on")) {
+                tempWarningView.setText(" ");
+            } else {
+                tempWarningView.setText("Weekprogram is now overwritten");
+            }
         }
     }
 
+    private class SetTemp extends AsyncTask<Void, Void, Void> {
 
+        @Override
+        protected Void doInBackground(Void...params) {
+            try {
+                HeatingSystem.put("targetTemperature", vtemp.toString());
+            } catch (Exception e) {
+                System.err.println("Error from getdata " + e);
+            }
+
+            return null;
+        }
+    }
 
     public void pause(){
         this.timer.cancel();
@@ -239,19 +254,19 @@ public class ThermostatActivity extends AppCompatActivity {
             if (notinOverview) {
                 try {
                     timeViewS = HeatingSystem.get("time");
+                    currTempViewS = HeatingSystem.get("currentTemperature");
                 } catch (Exception e) {
                     System.err.println("Error from getdata " + e);
                 }
-                updatetimeView.sendEmptyMessage(0);
+                updateView.sendEmptyMessage(0);
             }
         }
     }
 
-
-
-        private Handler updatetimeView = new Handler() {
-            public void handleMessage(Message msg) {
-                timeView.setText(timeViewS);
-            }
-        };
-    }
+    private Handler updateView = new Handler() {
+        public void handleMessage(Message msg) {
+            timeView.setText(timeViewS);
+            currentTempView.setText("Currently: " + currTempViewS + " ℃");
+        }
+    };
+}

@@ -162,9 +162,9 @@ public class HeatingSystem {
         // WeekProgram you need to call getWeekProgram().
         String link = "";
         boolean match = false;
-        String[] valid_names = { "day", "time", "currentTemperature",
+        String[] valid_names = { "day", "time", "currentTemperature", "targetTemperature",
                 "dayTemperature", "nightTemperature", "weekProgramState" };
-        String[] tag_names = { "current_day", "time", "current_temperature",
+        String[] tag_names = { "current_day", "time", "current_temperature", "target_temperature",
                 "day_temperature", "night_temperature", "week_program_state" };
         int i;
         for (i = 0; i < valid_names.length; i++) {
