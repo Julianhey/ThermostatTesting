@@ -51,7 +51,7 @@ public class ThermostatActivity extends AppCompatActivity {
     TextView temp, dayView, timeView, currTempView, dayTempView, nightTempView, vacView, tempWarningView, currentTempView, nextSwitchVal;
     static int counter = 0;
     int timeInInt;
-    Timer timer = new Timer();
+    Timer timer;
     TimerTask timerTask;
     ArrayList<Switch> switches;
 
@@ -158,6 +158,7 @@ public class ThermostatActivity extends AppCompatActivity {
 
         new GetTargetTemp().execute();
         new GetNextSwitch().execute();
+        this.timer = new Timer();
         timer.scheduleAtFixedRate(new myTimerTask(), 0, 1000);
     }
 
