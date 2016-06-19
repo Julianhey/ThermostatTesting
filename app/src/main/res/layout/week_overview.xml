@@ -211,15 +211,14 @@ tools:context="nl.tue.thermostattesting.WeekOverview">
 
     </LinearLayout>
 
-    <Switch
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Vacation"
-        android:id="@+id/Vacswitch"
-        android:thumbTint="#ff7b00"
-        android:checked="false"
-        android:layout_alignParentEnd="true"
-        android:layout_gravity="center_horizontal" />
+    <ImageView
+        android:layout_width="128px"
+        android:layout_height="128px"
+        android:id="@+id/refreshButton"
+        android:layout_gravity="right"
+        android:layout_marginRight="10dp"
+        android:text="Refresh"
+        android:src="@drawable/refresh_black"/>
 
     <LinearLayout
         android:id="@+id/linlaHeaderProgress"

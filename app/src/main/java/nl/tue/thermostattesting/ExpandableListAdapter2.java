@@ -23,12 +23,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import org.thermostatapp.util.HeatingSystem;
@@ -44,7 +46,7 @@ public class ExpandableListAdapter2 extends BaseExpandableListAdapter {
     private HashMap<String, List<String>> _listDataChild;
     private View _calledView;
     private WeekProgram _wpg;
-    WeekProgram wpgNew;
+
 
     List<String> listDataHeaderNew;
     HashMap<String, List<String>> listDataChildNew;
@@ -54,11 +56,13 @@ public class ExpandableListAdapter2 extends BaseExpandableListAdapter {
     PopupWindow popUp;
     Boolean click, cancel;
     TextView saveButton, cancelButton, startTime, endTime, setBtnstart, setBtnend, title, dayText, switchText, typeText;
-    String firstTime, lastTime, day_or_night, type;
+    String firstTime, lastTime, day_or_night, type, cDay, dayS, nightS;
     int startTimeI, endTimeI;
     ToggleButton day_or_nightSwitch;
-    ArrayList<String> timeBlockS = new ArrayList<>();
+    ArrayList<String> timeBlockS;
     ArrayList<Switch> DaySwitches;
+    ArrayList<Switch>  weekDay;
+
 
 
 
@@ -97,12 +101,20 @@ public class ExpandableListAdapter2 extends BaseExpandableListAdapter {
         setBtnend = (TextView) popUpView.findViewById(R.id.setBtnend);
         day_or_nightSwitch = (ToggleButton) popUpView.findViewById(R.id.day_or_nightSwitch);
 
+
+
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                saveInput();
 
+                if (saveButton.getText().toString().equals("Save")) {
+                    WeekOverview.addInput(startTimeI, endTimeI, typeText.getText().toString(), Integer.parseInt(dayText.getText().toString()));
+                } else if (saveButton.getText().toString().equals("Delete")){
+                    WeekOverview.deleteInput(Integer.parseInt(switchText.getText().toString()), endTimeI, typeText.getText().toString(), Integer.parseInt(dayText.getText().toString()));
+
+                }
+                popUp.dismiss();
 
             }
         });
@@ -191,7 +203,21 @@ public class ExpandableListAdapter2 extends BaseExpandableListAdapter {
     public View getChildView(final int groupPosition, final int childPosition,
                              boolean isLastChild, View convertView, final ViewGroup parent) {
 
-        final String childText = (String) getChild(groupPosition, childPosition);
+
+        DaySwitches = _wpg.getSwitchArrayL(groupPosition);
+        int startTimeTestInt = DaySwitches.get(childPosition).getTime_Int();
+        int durationTime = DaySwitches.get(childPosition).getDur();
+        String startTimeS = DaySwitches.get(childPosition).getTime();
+        String endTimeS = int_time_to_string(startTimeTestInt + durationTime);
+
+        final String childText = " " + startTimeS + " - " + endTimeS;
+        /**
+        if (DaySwitches.get(childPosition).getType().equals("night")) {
+            childText = "N" + startTimeS + " - " + endTimeS;//(String) getChild(groupPosition, childPosition);
+        } else if (DaySwitches.get(childPosition).getType().equals("day")){
+            childText = "D" + startTimeS + " - " + endTimeS;//(String) getChild(groupPosition, childPosition);
+        }
+        */
 
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this._context
@@ -199,13 +225,26 @@ public class ExpandableListAdapter2 extends BaseExpandableListAdapter {
             convertView = infalInflater.inflate(R.layout.list_item, null);
 
             TextView textView = (TextView) convertView.findViewById(R.id.lblListItem);
+            ImageView childIcon = (ImageView) convertView.findViewById(R.id.childIcon);
 
-            if (!childText.contains("N")){
-                textView.setCompoundDrawablesWithIntrinsicBounds(sun_light_resized,null,null,null);
-            }else {
+            if (DaySwitches.get(childPosition).getType().equals("night")){
+                childIcon.setImageResource(R.drawable.moon_light_resized);
 
-                textView.setCompoundDrawablesWithIntrinsicBounds(moon_light_resized,null,null,null);
+            }else if (DaySwitches.get(childPosition).getType().equals("day")){
+                childIcon.setImageResource(R.drawable.sun_light_resized);
             }
+            System.out.println(DaySwitches.get(childPosition).getState() + " " + childPosition);
+
+
+            //<----------------------------------------------------------------------------------------------------------------------------------- This should be the place where we can set the visibility of those not used.
+
+            /**
+            if (childPosition > _wpg.get_nr_switches_active(groupPosition) ){
+                System.out.println("GONE");
+                convertView.setVisibility(View.INVISIBLE);
+            }
+
+             */
 
             ImageView settingsButton = (ImageView)convertView.findViewById(R.id.settings_switch);
 
@@ -219,12 +258,7 @@ public class ExpandableListAdapter2 extends BaseExpandableListAdapter {
                         popUp.setFocusable(true);
                         cancel = false;
 
-                        popUp.setOnDismissListener(new PopupWindow.OnDismissListener() {
-                            @Override
-                            public void onDismiss() {
-                                //saveInput();
-                            }
-                        });
+
 
                         firstTime = childText.substring(1,7);
                         lastTime = childText.substring(9);
@@ -238,12 +272,16 @@ public class ExpandableListAdapter2 extends BaseExpandableListAdapter {
                         }
 
 
-                        title.setText("Configure Switch");
+                        title.setText("Deleting Switch");
                         startTime.setText("Start    " + firstTime);
                         endTime.setText("End      "+ lastTime);
                         dayText.setText(groupPosition + "");
                         switchText.setText(childPosition + "");
+                        setBtnstart.setVisibility(View.INVISIBLE);
+                        setBtnend.setVisibility(View.INVISIBLE);
                         typeText.setText(type);
+                        saveButton.setText("Delete");
+                        day_or_nightSwitch.setClickable(false);
 
                         click = false;
                     } else{
@@ -255,10 +293,12 @@ public class ExpandableListAdapter2 extends BaseExpandableListAdapter {
             });
         }
 
-        TextView txtListChild = (TextView) convertView
-                .findViewById(R.id.lblListItem);
+        if (convertView != null) {
+            TextView txtListChild = (TextView) convertView
+                    .findViewById(R.id.lblListItem);
 
-        txtListChild.setText(childText.substring(1));
+            txtListChild.setText(childText.substring(1));
+        }
         return convertView;
     }
 
@@ -322,6 +362,9 @@ public class ExpandableListAdapter2 extends BaseExpandableListAdapter {
                         endTime.setText("End      "+ firstTime);
 
                         dayText.setText(groupPosition + "");
+                        switchText.setText("add");
+                        saveButton.setText("Save");
+                        day_or_nightSwitch.setClickable(true);
 
                         title.setText("Add New Switch");
                         click = false;
@@ -341,7 +384,7 @@ public class ExpandableListAdapter2 extends BaseExpandableListAdapter {
 
         TextView outOf10 = (TextView) convertView.findViewById(R.id.outOf10);
 
-        outOf10.setText(_wpg.get_nr_switches_active(groupPosition) + "/9");
+        outOf10.setText(_wpg.get_nr_switches_active(groupPosition) + "/10");
         ImageView addButton = (ImageView)convertView.findViewById(R.id.new_switch);
         lblListHeader.setText(headerTitle);
 
@@ -374,136 +417,8 @@ public class ExpandableListAdapter2 extends BaseExpandableListAdapter {
     }
 
 
-    public void saveInput(){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    System.out.println(_wpg.toXML());
-                    if (switchText.getText().toString() != "") {
-                        _wpg.RemoveSwitch(Integer.parseInt(switchText.getText().toString()), _listDataHeader.get(Integer.parseInt(dayText.getText().toString())));
-                    }
-                    _wpg.AddSwitch(startTimeI, endTimeI, day_or_night, _listDataHeader.get(Integer.parseInt(dayText.getText().toString())));
-                    _wpg.check_duplicates(_wpg.getSwitchArrayL(Integer.parseInt(dayText.getText().toString())));
-                    try {
-                        Thread.sleep(500);                 //1000 milliseconds is one second.
-                    } catch (InterruptedException ex) {
-                        Thread.currentThread().interrupt();
-                    }
-                    wpgNew = _wpg;
-                    System.out.println(wpgNew.toXML());
-                } catch (Exception e) {
-                    System.err.println("Error from getdata " + e);
-                }
-            }
-        }).start();
 
 
-        try {
-            Thread.sleep(1500);                 //1000 milliseconds is one second.
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
-
-        new GetInfo2ndRefresh().execute();
-        popUp.dismiss();
-
-    }
-
-    public class GetInfo2ndRefresh extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute(){
-
-        }
-
-        @Override
-        protected Void doInBackground(Void...params){
-
-            try{
-                String[] valid_days = {"Monday", "Tuesday", "Wednesday",
-                        "Thursday", "Friday", "Saturday", "Sunday"};
-
-
-
-
-                listDataHeaderNew = new ArrayList<String>();
-                listDataChildNew = new HashMap<String, List<String>>();
-
-                // Adding child data
-                for (int j = 0; j < 7; j++) {
-                    listDataHeaderNew.add(valid_days[j]);
-
-
-                    // Adding child data
-                    List<String> switches = Switchlist(j);
-
-
-
-                    listDataChildNew.put(listDataHeaderNew.get(j), switches); // Header, Child data
-                }
-
-
-            }catch (Exception e){
-                System.err.println("Error from getdata " + e);
-            }
-
-            return null;
-        }
-        @Override
-        protected void onPostExecute(Void result){
-
-            System.out.println(listDataChildNew.get("Monday") + "<--");
-            setNewItems(listDataHeaderNew, listDataChildNew);
-
-        }
-
-    }
-    public ArrayList<String> Switchlist(final int daynumber) {
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-
-                    DaySwitches = wpgNew.getSwitchArrayL(daynumber);
-                    timeBlockS.clear();
-
-                    System.out.println("Im really refreshing stuff, honest!");
-                    for (int i = 0; i < 10; i++) {
-
-
-                        int startTime = DaySwitches.get(i).getTime_Int();
-                        int durationTime = DaySwitches.get(i).getDur();
-                        String startTimeS = int_time_to_string(startTime);
-                        String endTimeS = int_time_to_string(startTime + durationTime);
-                        if (DaySwitches.get(i).getState()) {
-                            if (DaySwitches.get(i).getType().equals("night")) {
-                                timeBlockS.add("N" + startTimeS + " - " + endTimeS);
-                            } else if (DaySwitches.get(i).getType().equals("day")) {
-                                timeBlockS.add("D" + startTimeS + " - " + endTimeS);
-                            }
-
-                        }
-                    }
-
-
-                } catch (Exception e) {
-                    System.err.println("Error from getdata " + e);
-                }
-            }
-        }).start();
-
-
-        try {
-            Thread.sleep(500);                 //1000 milliseconds is one second.
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
-
-        System.out.println(timeBlockS);
-        return timeBlockS;
-
-    }
 
     String int_time_to_string(int time_var) {
         String hours = Integer.toString(time_var / 100);
@@ -516,9 +431,10 @@ public class ExpandableListAdapter2 extends BaseExpandableListAdapter {
         return hours + ":" + mins;
     }
 
-    public void setNewItems(List<String> listDataHeader,HashMap<String, List<String>> listChildData) {
+    public void setNewItems(List<String> listDataHeader,HashMap<String, List<String>> listChildData, WeekProgram wpg) {
         this._listDataHeader = listDataHeader;
         this._listDataChild = listChildData;
+        this._wpg = wpg;
         this.notifyDataSetChanged();
 
     }
