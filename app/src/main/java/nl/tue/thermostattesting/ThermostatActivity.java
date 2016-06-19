@@ -39,18 +39,18 @@ public class ThermostatActivity extends AppCompatActivity {
     ImageView bPlus0_1;
     ImageView bMinus;
     ImageView bMinus0_1;
-    BigDecimal vtemp;
+    BigDecimal vtemp, currSwitchTempB;
     BigDecimal pointone = new BigDecimal("0.1");
     BigDecimal one = new BigDecimal("1");
     BigDecimal five = new BigDecimal("5");
     BigDecimal six = new BigDecimal("6");
     BigDecimal thirty = new BigDecimal("30");
     BigDecimal twenine = new BigDecimal("29");
-    String dayViewS, timeViewS, currTempViewS, dayTempViewS, nightTempViewS, vacViewS, nextSwitchTimeS, targetTempS;
+    String dayViewS, timeViewS, currTempViewS, dayTempViewS, nightTempViewS, vacViewS, nextSwitchS, targetTempS, currSwitchTempS, dayNextSwitch, tempNextSwitch, currentScheduleS;
     String[] valid_days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-    TextView temp, dayView, timeView, currTempView, dayTempView, nightTempView, vacView, tempWarningView, currentTempView, nextSwitchVal;
+    TextView temp, dayView, timeView, currTempView, dayTempView, nightTempView, vacView, tempWarningView, currentTempView, nextSwitchVal, scheduleReturnButton;
     static int counter = 0;
-    int timeInInt;
+    int timeInInt, timeNextSwitchInInt;
     Timer timer;
     TimerTask timerTask;
     ArrayList<Switch> switches;
@@ -67,6 +67,7 @@ public class ThermostatActivity extends AppCompatActivity {
         tempWarningView = (TextView) findViewById(R.id.tempWarningView);
         currentTempView = (TextView) findViewById(R.id.currentTempView);
         nextSwitchVal = (TextView) findViewById(R.id.nextSwitchVal);
+        scheduleReturnButton = (TextView) findViewById(R.id.ScheduleReturnButton);
 
         bPlus = (ImageView) findViewById(R.id.bPlus);
         bPlus0_1 = (ImageView) findViewById(R.id.bPlus0_1);
@@ -97,6 +98,7 @@ public class ThermostatActivity extends AppCompatActivity {
                     vtemp = vtemp.add(one);
                     temp.setText(vtemp + " \u2103");
                     fixArrows();
+                    new GetWarning().execute();
                     new SetTemp().execute();
                 }
             }
@@ -110,6 +112,7 @@ public class ThermostatActivity extends AppCompatActivity {
                     vtemp = vtemp.add(pointone);
                     temp.setText(vtemp + " \u2103");
                     fixArrows();
+                    new GetWarning().execute();
                     new SetTemp().execute();
                 }
             }
@@ -123,6 +126,7 @@ public class ThermostatActivity extends AppCompatActivity {
                     vtemp = vtemp.subtract(one);
                     temp.setText(vtemp + " \u2103");
                     fixArrows();
+                    new GetWarning().execute();
                     new SetTemp().execute();
                 }
             }
@@ -137,17 +141,17 @@ public class ThermostatActivity extends AppCompatActivity {
                     vtemp = vtemp.subtract(pointone);
                     temp.setText(vtemp + " \u2103");
                     fixArrows();
+                    new GetWarning().execute();
                     new SetTemp().execute();
                 }
             }
         });
 
-
         assert scheduleReturnButton != null;
         scheduleReturnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                new GetCurrSwitchTemp().execute();
             }
         });
     }
@@ -158,8 +162,9 @@ public class ThermostatActivity extends AppCompatActivity {
 
         new GetTargetTemp().execute();
         new GetNextSwitch().execute();
+        new GetCurrSchedule().execute();
         this.timer = new Timer();
-        timer.scheduleAtFixedRate(new myTimerTask(), 0, 1000);
+        timer.scheduleAtFixedRate(new myTimerTask(), 0, 200);
     }
 
     protected void onPause() {
@@ -190,6 +195,41 @@ public class ThermostatActivity extends AppCompatActivity {
         }
     }
 
+    private class GetWarning extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            try {
+                wpg = HeatingSystem.getWeekProgram();
+                timeViewS = HeatingSystem.get("time");
+                timeInInt = timeToInt(timeViewS);
+                dayViewS = HeatingSystem.get("day");
+                dayTempViewS = HeatingSystem.get("dayTemperature");
+                nightTempViewS = HeatingSystem.get("nightTemperature");
+            } catch (Exception e) {
+                System.err.println("Error from GetWarning " + e);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            switches = wpg.getSwitchArrayL(dayToInt(dayViewS));
+
+            currSwitchTempS = tempOfCurrSwitch();
+            currSwitchTempB = new BigDecimal(currSwitchTempS);
+            currSwitchTempB.setScale(10, BigDecimal.ROUND_CEILING);
+
+            if (currSwitchTempB.compareTo(vtemp) == 0) {
+                tempWarningView.setText(" ");
+            } else {
+                tempWarningView.setText("Weekprogram is now overwritten");
+            }
+        }
+    }
+
     private class GetTargetTemp extends AsyncTask<Void, Void, Void> {
 
         @Override
@@ -200,7 +240,7 @@ public class ThermostatActivity extends AppCompatActivity {
                 vtemp = new BigDecimal(targetTempS);
                 vtemp.setScale(10, BigDecimal.ROUND_CEILING);
             } catch (Exception e) {
-                System.err.println("Error from getdata " + e);
+                System.err.println("Error from getTargetTemp " + e);
             }
 
             return null;
@@ -209,6 +249,39 @@ public class ThermostatActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             temp.setText(vtemp + " \u2103");
+        }
+    }
+
+    private class GetCurrSwitchTemp extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            try {
+                wpg = HeatingSystem.getWeekProgram();
+                timeViewS = HeatingSystem.get("time");
+                timeInInt = timeToInt(timeViewS);
+                dayViewS = HeatingSystem.get("day");
+                dayTempViewS = HeatingSystem.get("dayTemperature");
+                nightTempViewS = HeatingSystem.get("nightTemperature");
+            } catch (Exception e) {
+                System.err.println("Error from GetCurrSwitchTemp " + e);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            switches = wpg.getSwitchArrayL(dayToInt(dayViewS));
+
+            currSwitchTempS = tempOfCurrSwitch();
+            currSwitchTempB = new BigDecimal(currSwitchTempS);
+            vtemp = currSwitchTempB;
+            temp.setText(vtemp + " \u2103");
+            tempWarningView.setText(" ");
+            fixArrows();
+            new SetTemp().execute();
         }
     }
 
@@ -225,7 +298,7 @@ public class ThermostatActivity extends AppCompatActivity {
                 dayTempViewS = HeatingSystem.get("dayTemperature");
                 nightTempViewS = HeatingSystem.get("nightTemperature");
             } catch (Exception e) {
-                System.err.println("Error from getdata " + e);
+                System.err.println("Error from GetNextSwitch " + e);
             }
 
             return null;
@@ -234,21 +307,37 @@ public class ThermostatActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             switches = wpg.getSwitchArrayL(dayToInt(dayViewS));
-
-            nextSwitchTimeS = dayOfNextSwitch() + " at " + timeOfNextSwitch() + " to " + tempOfNextSwitch() + " \u2103";
-            nextSwitchVal.setText(nextSwitchTimeS);
+            nextSwitchS = dayOfNextSwitch() + " at " + timeOfNextSwitch() + " to " + tempOfNextSwitch() + " \u2103";
+            nextSwitchVal.setText(nextSwitchS);
         }
     }
 
-    /*
-    vacViewS = HeatingSystem.get("weekProgramState");
+    private class GetCurrSchedule extends AsyncTask<Void, Void, Void> {
 
-    if (vacViewS.equals("on")) {
-        tempWarningView.setText(" ");
-    } else {
-        tempWarningView.setText("Weekprogram is now overwritten");
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            try {
+                wpg = HeatingSystem.getWeekProgram();
+                timeViewS = HeatingSystem.get("time");
+                timeInInt = timeToInt(timeViewS);
+                dayViewS = HeatingSystem.get("day");
+                dayTempViewS = HeatingSystem.get("dayTemperature");
+                nightTempViewS = HeatingSystem.get("nightTemperature");
+            } catch (Exception e) {
+                System.err.println("Error from GetNextSwitch " + e);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            switches = wpg.getSwitchArrayL(dayToInt(dayViewS));
+            currentScheduleS = "Back to schedule: " + tempOfCurrSwitch() + " \u2103";
+            scheduleReturnButton.setText(currentScheduleS);
+        }
     }
-    */
 
     private class SetTemp extends AsyncTask<Void, Void, Void> {
 
@@ -257,10 +346,41 @@ public class ThermostatActivity extends AppCompatActivity {
             try {
                 HeatingSystem.put("targetTemperature", vtemp.toString());
             } catch (Exception e) {
-                System.err.println("Error from getdata " + e);
+                System.err.println("Error from SetTemp " + e);
             }
 
             return null;
+        }
+    }
+
+    private class SetNextSwitch extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                wpg = HeatingSystem.getWeekProgram();
+                timeViewS = HeatingSystem.get("time");
+                timeInInt = timeToInt(timeViewS);
+                dayViewS = HeatingSystem.get("day");
+                dayTempViewS = HeatingSystem.get("dayTemperature");
+                nightTempViewS = HeatingSystem.get("nightTemperature");
+            } catch (Exception e) {
+                System.err.println("Error from SetTemp " + e);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            vtemp = new BigDecimal(tempNextSwitch);
+            temp.setText(vtemp + " \u2103");
+            tempWarningView.setText(" ");
+            fixArrows();
+            new GetCurrSchedule().execute();
+            switches = wpg.getSwitchArrayL(dayToInt(dayViewS));
+            nextSwitchS = dayOfNextSwitch() + " at " + timeOfNextSwitch() + " to " + tempOfNextSwitch() + " \u2103";
+            nextSwitchVal.setText(nextSwitchS);
         }
     }
 
@@ -286,8 +406,25 @@ public class ThermostatActivity extends AppCompatActivity {
         int back_int = Integer.parseInt(back);
         int time_int = front_int * 100
                 + (int) ((float) back_int / 60.0 * 100.0);
-        System.out.println(time_int);
         return time_int;
+    }
+
+    // returns the temperature of the current switch as a string
+    public String tempOfCurrSwitch() {
+        int mostRecentSwitchTime = 0;
+        String mostRecentSwitchTemp = nightTempViewS;
+
+        for (Switch s : switches) {
+            if (s.getState() && s.getTime_Int() < timeInInt && s.getTime_Int() > mostRecentSwitchTime) {
+                mostRecentSwitchTime = s.getTime_Int();
+                if (s.getType().equals("night")) {
+                    mostRecentSwitchTemp = nightTempViewS;
+                } else {
+                    mostRecentSwitchTemp = dayTempViewS;
+                }
+            }
+        }
+        return mostRecentSwitchTemp;
     }
 
     // returns if the next switch is today
@@ -305,10 +442,11 @@ public class ThermostatActivity extends AppCompatActivity {
         return nextSwitchFound;
     }
 
-    // returns the time of the next switch
+    // returns the time of the next switch and also saves it
     public String timeOfNextSwitch() {
         int lowestSwitchTime = 0;
         boolean firstSwitchFound = false;
+        String nextSwitchTime = " ";
 
         if (isNextSwitchToday()) {
             for (Switch s : switches) {
@@ -316,21 +454,23 @@ public class ThermostatActivity extends AppCompatActivity {
                     if (!firstSwitchFound || s.getTime_Int() < lowestSwitchTime) {
                         firstSwitchFound = true;
                         lowestSwitchTime = s.getTime_Int();
-                        nextSwitchTimeS = s.getTime();
+                        nextSwitchTime = s.getTime();
                     }
                 }
             }
-            return nextSwitchTimeS;
+            timeNextSwitchInInt = lowestSwitchTime;
+            return nextSwitchTime;
         } else {
+            timeNextSwitchInInt = 0;
             return "00:00";
         }
 
     }
 
-    // returns the day of the next switch
+    // returns the day of the next switch and saves it
     public String dayOfNextSwitch() {
-
         if (isNextSwitchToday()) {
+            dayNextSwitch = dayViewS;
             return dayViewS;
         } else {
             int nextDayInt = dayToInt(dayViewS) + 1;
@@ -338,11 +478,12 @@ public class ThermostatActivity extends AppCompatActivity {
             if (nextDayInt == 7) {
                 nextDayInt = 0;
             }
-            return valid_days[nextDayInt];
+            dayNextSwitch = valid_days[nextDayInt];
+            return dayNextSwitch;
         }
     }
 
-    // returns the temperature of the next switch
+    // returns the temperature of the next switch and saves it
     public String tempOfNextSwitch() {
         if (isNextSwitchToday()) {
             String timeNextSwitch = timeOfNextSwitch();
@@ -350,18 +491,21 @@ public class ThermostatActivity extends AppCompatActivity {
             for (Switch s : switches) {
                 if (s.getTime() == timeNextSwitch) {
                     if (s.getType().equals("night")) {
+                        tempNextSwitch = nightTempViewS;
                         return nightTempViewS;
                     } else {
+                        tempNextSwitch = dayTempViewS;
                         return dayTempViewS;
                     }
                 }
             }
         } else {
+            tempNextSwitch = nightTempViewS;
             return nightTempViewS;
         }
+        tempNextSwitch = "?";
         return "?";
     }
-
 
     private class myTimerTask extends TimerTask {
 
@@ -369,10 +513,15 @@ public class ThermostatActivity extends AppCompatActivity {
         public void run() {
             try {
                 timeViewS = HeatingSystem.get("time");
+                timeInInt = timeToInt(timeViewS);
                 dayViewS = HeatingSystem.get("day");
                 currTempViewS = HeatingSystem.get("currentTemperature");
+
+                if (dayViewS.equals(dayNextSwitch) && timeInInt >= timeNextSwitchInInt) {
+                    new SetNextSwitch().execute();
+                }
             } catch (Exception e) {
-                System.err.println("Error from getdata " + e);
+                System.err.println("Error from Timer " + e);
             }
             updateView.sendEmptyMessage(0);
         }
