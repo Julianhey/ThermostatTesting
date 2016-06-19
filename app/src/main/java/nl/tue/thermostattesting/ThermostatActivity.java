@@ -50,7 +50,6 @@ public class ThermostatActivity extends AppCompatActivity {
     static int counter = 0;
     Timer timer;
     TimerTask timerTask;
-    boolean notinOverview = false;
 
 
 
@@ -137,6 +136,7 @@ public class ThermostatActivity extends AppCompatActivity {
                     vtemp = vtemp.subtract(pointone);
                     temp.setText(vtemp+" \u2103");
                     fixArrows();
+
                     new SetTemp().execute();
                 }
             }
@@ -156,7 +156,6 @@ public class ThermostatActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        notinOverview = true;
         resume();
         new GetTemps().execute();
     }
@@ -164,7 +163,6 @@ public class ThermostatActivity extends AppCompatActivity {
     protected void onPause(){
         super.onPause();
 
-        notinOverview = false;
         pause();
     }
 
@@ -199,7 +197,6 @@ public class ThermostatActivity extends AppCompatActivity {
             try{
                 vtemp = new BigDecimal(HeatingSystem.get("targetTemperature"));             //.valueOf(vtemp);
                 vtemp.setScale(10, BigDecimal.ROUND_CEILING);
-                dayViewS = HeatingSystem.get("day");
                 vacViewS = HeatingSystem.get("weekProgramState");
 
             }catch (Exception e){
@@ -210,10 +207,7 @@ public class ThermostatActivity extends AppCompatActivity {
         }
         @Override
         protected void onPostExecute(Void result){
-
             temp.setText(vtemp + " \u2103");
-            dayView.setText(dayViewS);
-            timeView.setText(timeViewS);
 
             if (vacViewS.equals("on")) {
                 tempWarningView.setText(" ");
@@ -251,21 +245,21 @@ public class ThermostatActivity extends AppCompatActivity {
 
         @Override
         public void run() {
-            if (notinOverview) {
-                try {
-                    timeViewS = HeatingSystem.get("time");
-                    currTempViewS = HeatingSystem.get("currentTemperature");
-                } catch (Exception e) {
-                    System.err.println("Error from getdata " + e);
-                }
-                updateView.sendEmptyMessage(0);
+            try {
+                timeViewS = HeatingSystem.get("time");
+                dayViewS = HeatingSystem.get("day");
+                currTempViewS = HeatingSystem.get("currentTemperature");
+            } catch (Exception e) {
+                System.err.println("Error from getdata " + e);
             }
+            updateView.sendEmptyMessage(0);
         }
     }
 
     private Handler updateView = new Handler() {
         public void handleMessage(Message msg) {
             timeView.setText(timeViewS);
+            dayView.setText(dayViewS);
             currentTempView.setText("Currently: " + currTempViewS + " ℃");
         }
     };
