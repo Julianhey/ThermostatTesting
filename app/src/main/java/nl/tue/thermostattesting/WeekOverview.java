@@ -42,12 +42,14 @@ public class WeekOverview extends Activity {
 
     Button thermostat_activity;
     android.widget.Switch vacSwitch;
-    WeekProgram wpg;
-    String Tuesday, dayViewS, timeViewS, currTempViewS, dayTempViewS, nightTempViewS, vacViewS;
+    static WeekProgram wpg;
+    static String Tuesday, dayViewS, timeViewS, currTempViewS, dayTempViewS, nightTempViewS, vacViewS, dayS, nightS, cDay;
     ArrayList<Switch> DaySwitches;
     //TextView timeBlock0, timeBlock1, timeBlock2, timeBlock3, timeBlock4, timeBlock5, timeBlock6, timeBlock7, timeBlock8;
     ArrayList<String> timeBlockS = new ArrayList<>();
     TextView[] timeBlockViews = new TextView[9];
+    static ArrayList<Switch>  weekDay;
+
 
     TextView tempDay, tempNight;
     BigDecimal vtempD, vtempN;
@@ -58,18 +60,28 @@ public class WeekOverview extends Activity {
     BigDecimal thirty = new BigDecimal("30");
     BigDecimal twenine = new BigDecimal("29");
 
+    ImageView bPlus;
+    ImageView bPlus0_1;
+    ImageView bMinus;
+    ImageView bMinus0_1;
+    ImageView bPlusNight;
+    ImageView bPlus0_1Night;
+    ImageView bMinusNight;
+    ImageView bMinus0_1Night;
+
     LinearLayout linlaHeaderProgress;
     LinearLayout week_overview;
     ViewGroup.LayoutParams params;
 
     ExpandableListView switchListView;
 
-    String[] valid_days = {"Monday", "Tuesday", "Wednesday",
+    static String[] valid_days = {"Monday", "Tuesday", "Wednesday",
             "Thursday", "Friday", "Saturday", "Sunday"};
 
-    List<String> listDataHeader;
-    HashMap<String, List<String>> listDataChild;
+    static List<String> listDataHeader;
+    static HashMap<String, List<String>> listDataChild;
 
+    static ExpandableListAdapter2 adapter;
 
     SparseArray<Group> groups = new SparseArray<Group>();
 
@@ -90,14 +102,15 @@ public class WeekOverview extends Activity {
         //Mondaybutton = (Button) findViewById(R.id.Mondaybutton);
         vacSwitch = (android.widget.Switch) findViewById(R.id.Vacswitch);
 
-        ImageView bPlus = (ImageView) findViewById(R.id.bPlus);
-        ImageView bPlus0_1 = (ImageView) findViewById(R.id.bPlus0_1);
-        ImageView bMinus = (ImageView) findViewById(R.id.bMinus);
-        ImageView bMinus0_1 = (ImageView) findViewById(R.id.bMinus0_1);
-        ImageView bPlusNight = (ImageView) findViewById(R.id.bPlusNight);
-        ImageView bPlus0_1Night = (ImageView) findViewById(R.id.bPlus0_1Night);
-        ImageView bMinusNight = (ImageView) findViewById(R.id.bMinusNight);
-        ImageView bMinus0_1Night = (ImageView) findViewById(R.id.bMinus0_1Night);
+        bPlus = (ImageView) findViewById(R.id.bPlus);
+        bPlus0_1 = (ImageView) findViewById(R.id.bPlus0_1);
+        bMinus = (ImageView) findViewById(R.id.bMinus);
+        bMinus0_1 = (ImageView) findViewById(R.id.bMinus0_1);
+        bPlusNight = (ImageView) findViewById(R.id.bPlusNight);
+        bPlus0_1Night = (ImageView) findViewById(R.id.bPlus0_1Night);
+        bMinusNight = (ImageView) findViewById(R.id.bMinusNight);
+        bMinus0_1Night = (ImageView) findViewById(R.id.bMinus0_1Night);
+        ImageView reButton = (ImageView) findViewById(R.id.refreshButton);
 
 
 
@@ -150,7 +163,9 @@ public class WeekOverview extends Activity {
                 if (vtempD.compareTo(twenine) <= 0) {
                     vtempD = vtempD.add(one);
                     tempDay.setText(vtempD + " \u2103");
+                    fixArrows();
                     new SetTemp().execute();
+
                 } else {
                     //Make a popup error thing that says that you cant set the temp to < 5
                 }
@@ -164,6 +179,8 @@ public class WeekOverview extends Activity {
                 if (vtempD.compareTo(thirty) < 0) {
                     vtempD = vtempD.add(pointone);
                     tempDay.setText(vtempD + " \u2103");
+                    fixArrows();
+                    new SetTemp().execute();
                 } else {
                     //Make a popup error thing that says that you cant set the temp to < 5
                 }
@@ -177,6 +194,8 @@ public class WeekOverview extends Activity {
                 if (vtempD.compareTo(six) >= 0) {
                     vtempD = vtempD.subtract(one);
                     tempDay.setText(vtempD + " \u2103");
+                    fixArrows();
+                    new SetTemp().execute();
                 } else {
                     //Make a popup error thing that says that you cant set the temp to < 5
                 }
@@ -192,6 +211,8 @@ public class WeekOverview extends Activity {
                 if (vtempD.compareTo(five) > 0) {
                     vtempD = vtempD.subtract(pointone);
                     tempDay.setText(vtempD + " \u2103");
+                    fixArrows();
+                    new SetTemp().execute();
                 } else {
                     //Make a popup error thing that says that you cant set the temp to < 5
                 }
@@ -205,6 +226,8 @@ public class WeekOverview extends Activity {
                 if (vtempN.compareTo(twenine) <= 0) {
                     vtempN = vtempN.add(one);
                     tempNight.setText(vtempN + " \u2103");
+                    fixArrows();
+                    new SetTempNight().execute();
                 } else {
                     //Make a popup error thing that says that you cant set the temp to < 5
                 }
@@ -218,6 +241,8 @@ public class WeekOverview extends Activity {
                 if (vtempN.compareTo(thirty) < 0) {
                     vtempN = vtempN.add(pointone);
                     tempNight.setText(vtempN + " \u2103");
+                    fixArrows();
+                    new SetTempNight().execute();
                 } else {
                     //Make a popup error thing that says that you cant set the temp to < 5
                 }
@@ -231,6 +256,8 @@ public class WeekOverview extends Activity {
                 if (vtempN.compareTo(six) >= 0) {
                     vtempN = vtempN.subtract(one);
                     tempNight.setText(vtempN + " \u2103");
+                    fixArrows();
+                    new SetTempNight().execute();
                 } else {
                     //Make a popup error thing that says that you cant set the temp to < 5
                 }
@@ -246,39 +273,22 @@ public class WeekOverview extends Activity {
                 if (vtempN.compareTo(five) > 0) {
                     vtempN = vtempN.subtract(pointone);
                     tempNight.setText(vtempN + " \u2103");
+                    fixArrows();
+                    new SetTempNight().execute();
                 } else {
                     //Make a popup error thing that says that you cant set the temp to < 5
                 }
             }
         });
 
-        vacSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                HeatingSystem.put("weekProgramState", "off");
-                            } catch (Exception e) {
-                                System.err.println("Error from getdata " + e);
-                            }
-                        }
-                    }).start();
-                } else {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                HeatingSystem.put("weekProgramState", "on");
-                            } catch (Exception e) {
-                                System.err.println("Error from getdata " + e);
-                            }
-                        }
-                    }).start();
-                }
+        assert reButton != null;
+        reButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new GetInfo2nd().execute();
             }
         });
+
 
 
     }
@@ -295,18 +305,12 @@ public class WeekOverview extends Activity {
 
                     for (int i = 0; i < 10; i++) {
 
-                        int startTime = DaySwitches.get(i).getTime_Int();
-                        int durationTime = DaySwitches.get(i).getDur();
-                        String startTimeS = int_time_to_string(startTime);
-                        String endTimeS = int_time_to_string(startTime + durationTime);
-                        if (DaySwitches.get(i).getState()) {
-                            if (DaySwitches.get(i).getType().equals("night")) {
-                                timeBlockS.add("N" + startTimeS + " - " + endTimeS);
-                            } else if (DaySwitches.get(i).getType().equals("day")) {
-                                timeBlockS.add("D" + startTimeS + " - " + endTimeS);
-                            }
 
-                        }
+                        //if (DaySwitches.get(i).getState()) {
+                            timeBlockS.add("");
+
+
+                        //}
                     }
 
 
@@ -339,7 +343,7 @@ public class WeekOverview extends Activity {
     }
 
 
-    String int_time_to_string(int time_var) {
+    static String int_time_to_string(int time_var) {
         String hours = Integer.toString(time_var / 100);
         String mins = Integer.toString(time_var - time_var / 100 * 100);
         if (time_var < 1000)
@@ -364,6 +368,7 @@ public class WeekOverview extends Activity {
 
             try{
                 wpg = HeatingSystem.getWeekProgram();
+                System.out.println(wpg.toXML());
 
                 listDataHeader = new ArrayList<String>();
                 listDataChild = new HashMap<String, List<String>>();
@@ -391,7 +396,7 @@ public class WeekOverview extends Activity {
         @Override
         protected void onPostExecute(Void result){
 
-            ExpandableListAdapter2 adapter = new ExpandableListAdapter2(WeekOverview.this,
+            adapter = new ExpandableListAdapter2(WeekOverview.this,
                     listDataHeader,listDataChild, week_overview, wpg);
             switchListView.setAdapter(adapter);
             linlaHeaderProgress.setVisibility(View.GONE);
@@ -401,7 +406,97 @@ public class WeekOverview extends Activity {
 
 
 
+    public static void addInput(int startTime, int endTime, String type, int dayNumber){
+        System.out.println(startTime + " " + endTime + " " + type + " " + dayNumber);
 
+        dayS = int_time_to_string(startTime);
+        nightS = int_time_to_string(endTime);
+        cDay = valid_days[dayNumber];
+        weekDay = wpg.getSwitchArrayL(dayNumber);
+
+
+
+
+
+        for (int j = 0; j <= 9; j++) {
+            if (!wpg.data.get(cDay).get(j).getState() && wpg.data.get(cDay).get(j).getType().equals("day")) {
+                weekDay.set(j, new Switch("day", true, dayS));
+                System.out.println("Added Shit");
+                break;
+            }
+        }
+        for (int j = 0; j <= 9; j++) {
+            if (!wpg.data.get(cDay).get(j).getState() && wpg.data.get(cDay).get(j).getType().equals("night")) {
+                weekDay.set(j, new Switch("night", true, nightS));
+                System.out.println("Added Shit");
+                break;
+            }
+        }
+        System.out.println("something else"); //wpg.toXML());
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    HeatingSystem.setWeekProgram(wpg);
+                } catch (Exception e) {
+                    System.err.println("Error from getdata " + e);
+                }
+            }
+        }).start();
+
+        try {
+            Thread.sleep(500);                 //1000 milliseconds is one second.
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+
+        adapter.notifyDataSetChanged();
+        adapter.setNewItems(listDataHeader,listDataChild, wpg);
+
+
+    }
+
+    public static void deleteInput(int startTime, int endTime, String type, int dayNumber){
+        System.out.println(startTime + " " + endTime + " " + type + " " + dayNumber);
+
+        dayS = int_time_to_string(startTime);
+        nightS = int_time_to_string(endTime);
+        cDay = valid_days[dayNumber];
+        weekDay = wpg.getSwitchArrayL(dayNumber);
+
+
+        wpg.RemoveSwitch(startTime, cDay);
+
+
+
+
+        System.out.println("something else"); //wpg.toXML());
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    HeatingSystem.setWeekProgram(wpg);
+                } catch (Exception e) {
+                    System.err.println("Error from getdata " + e);
+                }
+            }
+        }).start();
+
+        try {
+            Thread.sleep(500);                 //1000 milliseconds is one second.
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+
+        adapter.notifyDataSetChanged();
+        adapter.setNewItems(listDataHeader,listDataChild, wpg);
+
+
+    }
 
 
     private class GetTemps extends AsyncTask<Void, Void, Void>{
@@ -434,29 +529,77 @@ public class WeekOverview extends Activity {
         }
     }
 
-    private class SetTemp extends AsyncTask<Void, Void, Void>{
-
+    private class SetTemp extends AsyncTask<Void, Void, Void> {
 
         @Override
-        protected Void doInBackground(Void...params){
-
-            try{
-                HeatingSystem.put("nightTemperature", "6.0");
-
-
-            }catch (Exception e){
+        protected Void doInBackground(Void... params) {
+            try {
+                HeatingSystem.put("dayTemperature", vtempD.toString());
+            } catch (Exception e) {
                 System.err.println("Error from getdata " + e);
             }
 
             return null;
         }
+    }
+
+    private class SetTempNight extends AsyncTask<Void, Void, Void> {
+
         @Override
-        protected void onPostExecute(Void result){
+        protected Void doInBackground(Void... params) {
+            try {
+                HeatingSystem.put("nightTemperature", vtempN.toString());
+            } catch (Exception e) {
+                System.err.println("Error from getdata " + e);
+            }
 
-            tempDay.setText(vtempD + " \u2103");
-            tempNight.setText(vtempN + " \u2103");
+            return null;
+        }
+    }
 
+    void fixArrows() {
+        if (vtempD.compareTo(thirty) == 0) {
+            bPlus0_1.setImageResource(R.drawable.arrow_up_gray);
+        } else {
+            bPlus0_1.setImageResource(R.drawable.arrow_up);
+        }
+        if (vtempD.compareTo(twenine) > 0) {
+            bPlus.setImageResource(R.drawable.arrow_up_gray);
+        } else {
+            bPlus.setImageResource(R.drawable.arrow_up);
+        }
+        if (vtempD.compareTo(six) < 0) {
+            bMinus.setImageResource(R.drawable.arrow_down_gray);
+        } else {
+            bMinus.setImageResource(R.drawable.arrow_down);
+        }
+        if (vtempD.compareTo(five) == 0) {
+            bMinus0_1.setImageResource(R.drawable.arrow_down_gray);
+        } else {
+            bMinus0_1.setImageResource(R.drawable.arrow_down);
+        }
+    }
 
+    void fixArrowsN() {
+        if (vtempN.compareTo(thirty) == 0) {
+            bPlus0_1Night.setImageResource(R.drawable.arrow_up_gray);
+        } else {
+            bPlus0_1.setImageResource(R.drawable.arrow_up);
+        }
+        if (vtempN.compareTo(twenine) > 0) {
+            bPlus.setImageResource(R.drawable.arrow_up_gray);
+        } else {
+            bPlus.setImageResource(R.drawable.arrow_up);
+        }
+        if (vtempN.compareTo(six) < 0) {
+            bMinus.setImageResource(R.drawable.arrow_down_gray);
+        } else {
+            bMinus.setImageResource(R.drawable.arrow_down);
+        }
+        if (vtempN.compareTo(five) == 0) {
+            bMinus0_1.setImageResource(R.drawable.arrow_down_gray);
+        } else {
+            bMinus0_1.setImageResource(R.drawable.arrow_down);
         }
     }
 

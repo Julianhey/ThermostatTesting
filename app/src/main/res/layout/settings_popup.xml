@@ -126,6 +126,7 @@
         android:gravity="center"
         android:textColor="@color/MainWhite"
         android:id="@+id/deleteButton"
+        android:visibility="invisible"
         android:background="@drawable/save_cancelbtn"
         android:layout_gravity="center_horizontal" />
 
