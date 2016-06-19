@@ -414,7 +414,7 @@ public class WeekOverview extends Activity {
                 vtempD = new BigDecimal(HeatingSystem.get("dayTemperature"));             //.valueOf(vtemp);
                 vtempD.setScale(10, BigDecimal.ROUND_CEILING);
                 System.out.println(vtempD);
-                vtempN = new BigDecimal(HeatingSystem.get("dayTemperature"));             //.valueOf(vtemp);
+                vtempN = new BigDecimal(HeatingSystem.get("nightTemperature"));             //.valueOf(vtemp);
                 vtempN.setScale(10, BigDecimal.ROUND_CEILING);
                 System.out.println(vtempD);
 
