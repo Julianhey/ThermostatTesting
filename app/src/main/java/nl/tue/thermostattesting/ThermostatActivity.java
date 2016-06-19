@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -54,6 +55,7 @@ public class ThermostatActivity extends AppCompatActivity {
     Timer timer = new Timer();
     TimerTask timerTask;
     ArrayList<Switch> switches;
+    android.widget.Switch vacSwitch;
 
 
     @Override
@@ -73,6 +75,7 @@ public class ThermostatActivity extends AppCompatActivity {
         bMinus = (ImageView) findViewById(R.id.bMinus);
         bMinus0_1 = (ImageView) findViewById(R.id.bMinus0_1);
         Button scheduleReturnButton = (Button) findViewById(R.id.ScheduleReturnButton);
+        vacSwitch = (android.widget.Switch) findViewById(R.id.Vacswitch);
 
         temp = (TextView) findViewById(R.id.temp);
         Button weekOverview = (Button) findViewById(R.id.week_overview);
@@ -150,8 +153,19 @@ public class ThermostatActivity extends AppCompatActivity {
 
             }
         });
-    }
 
+
+        vacSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    new SetVacationOn().execute();
+                } else {
+                    new SetVacationOff().execute();
+                }
+            }
+        });
+
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -208,6 +222,46 @@ public class ThermostatActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             temp.setText(vtemp + " \u2103");
+        }
+    }
+
+    private class SetVacationOn extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            try {
+                HeatingSystem.put("weekProgramState", "off");
+            } catch (Exception e) {
+                System.err.println("Error from getdata " + e);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+
+        }
+    }
+
+    private class SetVacationOff extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            try {
+                HeatingSystem.put("weekProgramState", "on");
+            } catch (Exception e) {
+                System.err.println("Error from getdata " + e);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+
         }
     }
 
