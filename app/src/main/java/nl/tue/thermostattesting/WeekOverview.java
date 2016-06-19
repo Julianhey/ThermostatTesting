@@ -300,7 +300,12 @@ public class WeekOverview extends Activity {
                         String startTimeS = int_time_to_string(startTime);
                         String endTimeS = int_time_to_string(startTime + durationTime);
                         if (DaySwitches.get(i).getState()) {
-                            timeBlockS.add(startTimeS + " - " + endTimeS);
+                            if (DaySwitches.get(i).getType().equals("night")) {
+                                timeBlockS.add("N" + startTimeS + " - " + endTimeS);
+                            } else if (DaySwitches.get(i).getType().equals("day")) {
+                                timeBlockS.add("D" + startTimeS + " - " + endTimeS);
+                            }
+
                         }
                     }
 
@@ -387,12 +392,14 @@ public class WeekOverview extends Activity {
         protected void onPostExecute(Void result){
 
             ExpandableListAdapter2 adapter = new ExpandableListAdapter2(WeekOverview.this,
-                    listDataHeader,listDataChild, week_overview);
+                    listDataHeader,listDataChild, week_overview, wpg);
             switchListView.setAdapter(adapter);
             linlaHeaderProgress.setVisibility(View.GONE);
 
         }
     }
+
+
 
 
 

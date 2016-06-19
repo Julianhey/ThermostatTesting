@@ -17,13 +17,21 @@
 
         <TextView
             android:id="@+id/lblListHeader"
-            android:layout_width="260dp"
+            android:layout_width="225dp"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:paddingLeft="40dp"
             android:background="#00000000"
             android:textColor="@color/MainWhite"
             android:text="Some text" />
+        <TextView
+            android:layout_width="35dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:background="#00000000"
+            android:textColor="@color/MainWhite"
+            android:id="@+id/outOf10"
+            android:text="x/9"/>
 
         <ImageView
             android:layout_width="35dp"
